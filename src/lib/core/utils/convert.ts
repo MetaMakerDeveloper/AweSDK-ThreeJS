@@ -1,13 +1,16 @@
 import * as THREE from "three";
 let bodyMorphTargetDictionary = {};
 let teethMorphTargetDictionary = {};
-
-export function setBodyMorphTargetDictionary(map) {
+let bodyMeshName;
+let Tooth_downMeshName;
+export function setBodyMorphTargetDictionary(name, map) {
   bodyMorphTargetDictionary = map;
   console.log(bodyMorphTargetDictionary);
+  bodyMeshName = name;
 }
-export function setTeethMorphTargetDictionary(map) {
+export function setTeethMorphTargetDictionary(name, map) {
   teethMorphTargetDictionary = map;
+  Tooth_downMeshName = name;
   console.log(teethMorphTargetDictionary);
 }
 export default function Convert(fp, isEmotion = false) {
@@ -71,11 +74,11 @@ export default function Convert(fp, isEmotion = false) {
     } else if (str.indexOf("Skinned") > 0) {
       const s = str.split(":");
       const s2 = s[0].split("/");
-      let boneName = s2[s2.length - 1];
+      const boneName = s2[s2.length - 1];
       if (boneName == "body") {
-        boneName = "pingjunren"; //////////////////////////////////liujun
+        /////////////////////////////////liujun
         const trackName =
-          boneName +
+          bodyMeshName +
           ".morphTargetInfluences[" +
           bodyMorphTargetDictionary[s[2].substring(11)] +
           "]";
@@ -87,7 +90,7 @@ export default function Convert(fp, isEmotion = false) {
       }
       if (boneName == "tooth_down") {
         const trackName =
-          boneName +
+          Tooth_downMeshName +
           ".morphTargetInfluences[" +
           teethMorphTargetDictionary[s[2].substring(11)] +
           "]";

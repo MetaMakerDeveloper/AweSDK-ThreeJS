@@ -3,6 +3,7 @@ import * as THREE from "three";
 import MMFT from "@/lib";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Stats from "three/examples/jsm/libs/stats.module.js";
+import * as fflate from "fflate";
 let renderer;
 let scene;
 let camera: THREE.PerspectiveCamera;
@@ -28,6 +29,20 @@ const params = {
     // todo
     const [audio, teeth, emo] = await fetchTTSToAnim(params.ttsText);
     handleTTS(audio, teeth, emo);
+  },
+  加载GLBZip包: async function () {
+    // todo
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.addEventListener("change", async (e) => {
+      console.log(e);
+      if (input.files.length) {
+        const glbBuffer = await uncompressZipFile(input.files[0]);
+        replaceIdol(glbBuffer);
+      }
+      input.remove();
+    });
+    input.click();
   },
 };
 const activeActions = [];
@@ -85,7 +100,7 @@ window.onload = async () => {
   controls.update();
   // 创建Idol
 
-  idol = await MMFT.core.loadGLTFModal(params.url);
+  idol = await MMFT.core.loadGLTFModel(params.url);
   mixer = new THREE.AnimationMixer(idol);
   scene.add(idol);
   addDefaultLights(scene);
@@ -254,15 +269,22 @@ function addGui() {
     activeTTSResource.teeth = mixer.clipAction(clip);
     activeTTSResource.teeth.play();
   });
+
+  const zipLoaderGui = gui.addFolder("ZipGlbLoader");
+  zipLoaderGui.add(params, "加载GLBZip包");
 }
 
-async function replaceIdol(url) {
+async function replaceIdol(opts: string | Uint8Array) {
   if (idol) {
     scene.remove(idol);
     idol.clear();
     idol = null;
   }
-  idol = await MMFT.core.loadGLTFModal(url);
+  if (typeof opts == "string") {
+    idol = await MMFT.core.loadGLTFModel(opts);
+  } else {
+    idol = await MMFT.core.parseGLTFModel(opts.buffer);
+  }
   mixer = new THREE.AnimationMixer(idol);
   scene.add(idol);
 }
@@ -372,4 +394,35 @@ function clearTTSResource() {
     const audio = activeTTSResource.audio;
     audio.source && audio.stop();
   }
+}
+
+// 解压zip包，提取glb文件
+function uncompressZipFile(file: File): Promise<Uint8Array> {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.onload = async (e) => {
+      const result = e.target.result as ArrayBuffer;
+      console.log(`读取完毕`);
+      const glbBuffer: Uint8Array = await new Promise((resolve) => {
+        const unzipper = new fflate.Unzip();
+        unzipper.register(fflate.UnzipInflate);
+        unzipper.onfile = (file) => {
+          // file.name is a string, file is a stream
+          if (!(file.name as string).endsWith(".glb")) {
+            return;
+          }
+          file.ondata = (err, dat, final) => {
+            // Stream output here
+            resolve(dat);
+          };
+          console.log("Reading:", file.name);
+
+          file.start();
+        };
+        unzipper.push(new Uint8Array(result), true);
+      });
+      resolve(glbBuffer);
+    };
+    fileReader.readAsArrayBuffer(file);
+  });
 }
