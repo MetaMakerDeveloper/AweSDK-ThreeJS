@@ -34,7 +34,7 @@ let model = await MetaMakerForThree.loadModal(url)
 scene.add(model)
 ```
 
-详细代码可查看 [加载数字人](./lib/../libs/metamaker-for-three.js)loadModel 方法
+详细代码可查看 [加载数字人](./src/lib/metamaker-for-three.js)loadModel 方法
 
 进行模型的加载，随后添加到场景中
 
@@ -42,4 +42,4 @@ scene.add(model)
 
 在本例子中，提供的语音请求接口是测试接口(**注意：不保证后续功能的提供，请勿使用在正式环境**)，购买相关服务后，请自行通过后端鉴权和接口转发的方式完成接口的调用。
 
-详细代码可查看 [加载数字人](./lib/../libs/metamaker-for-three.js)loadTTSAndAnimate 方法
+详细代码可查看 [加载数字人](./src/lib/metamaker-for-three.js)loadTTSAndAnimate 方法
