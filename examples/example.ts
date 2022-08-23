@@ -300,6 +300,7 @@ async function handleChangePose(value: string) {
     }
     setTimeout(() => {
       action.paused = true;
+      action.stop();
     }, params.fadeOut);
   }
 

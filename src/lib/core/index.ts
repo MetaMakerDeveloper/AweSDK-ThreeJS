@@ -3,6 +3,7 @@ import { GLTFLoader } from "./utils/GLTFLoader";
 import { resetMaterial } from "./utils/ResetMaterial";
 import { setBodyMorphTargetDictionary, setTeethMorphTargetDictionary } from "./utils/convert";
 import { downloadAnimation, loadAnimationData } from "./utils/downloadAnimation";
+
 import Convert from "./utils/convert";
 function loadGLTFModel(url: string): Promise<THREE.Group> {
   return new Promise((resolve) => {
