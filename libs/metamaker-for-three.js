@@ -23,9 +23,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "Convert": function() { return /* reexport safe */ _utils_convert__WEBPACK_IMPORTED_MODULE_2__["default"]; },
 /* harmony export */   "downloadAnimation": function() { return /* reexport safe */ _utils_downloadAnimation__WEBPACK_IMPORTED_MODULE_3__.downloadAnimation; },
 /* harmony export */   "loadAnimationData": function() { return /* reexport safe */ _utils_downloadAnimation__WEBPACK_IMPORTED_MODULE_3__.loadAnimationData; },
-/* harmony export */   "loadGLTFModal": function() { return /* binding */ loadGLTFModal; },
+/* harmony export */   "loadGLTFModel": function() { return /* binding */ loadGLTFModel; },
 /* harmony export */   "loadTTSEmoAnimation": function() { return /* binding */ loadTTSEmoAnimation; },
-/* harmony export */   "loadTTSTeethAnimation": function() { return /* binding */ loadTTSTeethAnimation; }
+/* harmony export */   "loadTTSTeethAnimation": function() { return /* binding */ loadTTSTeethAnimation; },
+/* harmony export */   "parseGLTFModel": function() { return /* binding */ parseGLTFModel; }
 /* harmony export */ });
 /* harmony import */ var _utils_GLTFLoader__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils/GLTFLoader */ "./src/lib/core/utils/GLTFLoader.js");
 /* harmony import */ var _utils_ResetMaterial__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils/ResetMaterial */ "./src/lib/core/utils/ResetMaterial.ts");
@@ -37,20 +38,50 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-function loadGLTFModal(url) {
+function loadGLTFModel(url) {
   return new Promise(resolve => {
     const loader = new _utils_GLTFLoader__WEBPACK_IMPORTED_MODULE_0__.GLTFLoader();
     loader.load(url, gltf => {
       const model = gltf.scene;
-      (0,_utils_ResetMaterial__WEBPACK_IMPORTED_MODULE_1__.resetMaterial)(model);
-      const body = model.getObjectByName("pingjunren");
-      (0,_utils_convert__WEBPACK_IMPORTED_MODULE_2__.setBodyMorphTargetDictionary)(body.morphTargetDictionary);
-      const teeth = model.getObjectByName("tooth_down");
-      (0,_utils_convert__WEBPACK_IMPORTED_MODULE_2__.setTeethMorphTargetDictionary)(teeth.morphTargetDictionary);
-      body.updateMorphTargets();
+      setModelInfo(model);
       resolve(model);
     });
   });
+}
+
+function parseGLTFModel(buffer) {
+  const loader = new _utils_GLTFLoader__WEBPACK_IMPORTED_MODULE_0__.GLTFLoader();
+  return new Promise((resolve, reject) => {
+    loader.parse(buffer, "", gltf => {
+      const model = gltf.scene;
+      setModelInfo(model);
+      resolve(model);
+    }, e => {
+      reject(e);
+    });
+  });
+} // 设置Model信息
+
+
+function setModelInfo(model) {
+  (0,_utils_ResetMaterial__WEBPACK_IMPORTED_MODULE_1__.resetMaterial)(model);
+  let body = model.getObjectByName("body").children[0];
+
+  if (!body.morphTargetDictionary) {
+    body = body.parent.children[1];
+  }
+
+  (0,_utils_convert__WEBPACK_IMPORTED_MODULE_2__.setBodyMorphTargetDictionary)(body.name, body.morphTargetDictionary);
+  let teeth = model.getObjectByName("tooth_down");
+
+  if (!teeth || !teeth.morphTargetDictionary) {
+    teeth = teeth.children[0];
+  }
+
+  (0,_utils_convert__WEBPACK_IMPORTED_MODULE_2__.setTeethMorphTargetDictionary)(teeth.name, teeth.morphTargetDictionary);
+  teeth.updateMorphTargets();
+  body.updateMorphTargets();
+  return model;
 }
 
 function loadTTSTeethAnimation(url) {
@@ -177,12 +208,16 @@ __webpack_require__.r(__webpack_exports__);
 
 let bodyMorphTargetDictionary = {};
 let teethMorphTargetDictionary = {};
-function setBodyMorphTargetDictionary(map) {
+let bodyMeshName;
+let Tooth_downMeshName;
+function setBodyMorphTargetDictionary(name, map) {
   bodyMorphTargetDictionary = map;
   console.log(bodyMorphTargetDictionary);
+  bodyMeshName = name;
 }
-function setTeethMorphTargetDictionary(map) {
+function setTeethMorphTargetDictionary(name, map) {
   teethMorphTargetDictionary = map;
+  Tooth_downMeshName = name;
   console.log(teethMorphTargetDictionary);
 }
 function Convert(fp, isEmotion = false) {
@@ -256,12 +291,11 @@ function Convert(fp, isEmotion = false) {
     } else if (str.indexOf("Skinned") > 0) {
       const s = str.split(":");
       const s2 = s[0].split("/");
-      let boneName = s2[s2.length - 1];
+      const boneName = s2[s2.length - 1];
 
       if (boneName == "body") {
-        boneName = "pingjunren"; //////////////////////////////////liujun
-
-        const trackName = boneName + ".morphTargetInfluences[" + bodyMorphTargetDictionary[s[2].substring(11)] + "]";
+        /////////////////////////////////liujun
+        const trackName = bodyMeshName + ".morphTargetInfluences[" + bodyMorphTargetDictionary[s[2].substring(11)] + "]";
         const keys = element["Keys"];
         const times = keys.map(k => k["Time"]);
         const values = keys.map(k => k["Value"] / 100 * 0.65);
@@ -270,7 +304,7 @@ function Convert(fp, isEmotion = false) {
       }
 
       if (boneName == "tooth_down") {
-        const trackName = boneName + ".morphTargetInfluences[" + teethMorphTargetDictionary[s[2].substring(11)] + "]";
+        const trackName = Tooth_downMeshName + ".morphTargetInfluences[" + teethMorphTargetDictionary[s[2].substring(11)] + "]";
         const keys = element["Keys"];
         const times = keys.map(k => k["Time"]);
         const values = keys.map(k => k["Value"] / 100 * 0.65);
