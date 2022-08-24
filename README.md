@@ -1,29 +1,21 @@
 # metamaker-for-three
 
-## Project setup
+## 启动 Example
+
 ```
-yarn install
+yarn run serve
 ```
 
-### Compiles and hot-reloads for development
+## 打包 lib
+
 ```
-yarn serve
+yarn run build:lib
 ```
 
-### Compiles and minifies for production
-```
-yarn build
-```
+## lib
 
-### Run your unit tests
-```
-yarn test:unit
-```
+core 模块中包含了加载人物模型，动画，口型等相关代码
 
-### Lints and fixes files
-```
-yarn lint
-```
+## 注意
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+案例中的模型仅作为展示使用，不可私自商用，需要请联系黑镜商务人员
