@@ -333,9 +333,9 @@ async function handleTTS(audio, teeth, emo) {
 
 async function fetchTTSToAnim(text: string) {
   const tts = {
-    voice_name: "智能客服_静静",
-    speed: 50,
-    volume: 30,
+    voice_name: "zh-CN-XiaoxiaoNeural",
+    speed: 42,
+    volume: 100,
   };
   let response: any = await fetch("//open.metamaker.cn/api/tts/v1/text_to_anim", {
     method: "post",

@@ -22,7 +22,7 @@ export async function largeUint8ArrayToString(uint8arr): Promise<string> {
     const blob = new Blob([uint8arr]);
     const reader = new FileReader();
     reader.onload = function (e) {
-      resolve(e.target?.result as string);
+      resolve(e.target.result as string);
     };
     reader.readAsText(blob);
   });
