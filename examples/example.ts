@@ -292,6 +292,7 @@ async function replaceIdol(opts: string | Uint8Array) {
 async function handleChangePose(value: string) {
   const animateJSON = await MMFT.core.loadAnimationData(value);
   const clip = MMFT.core.Convert(animateJSON);
+  console.warn(`pose clip `, clip);
   const action = mixer.clipAction(clip);
   while (activeActions.length) {
     const action = activeActions.pop();
