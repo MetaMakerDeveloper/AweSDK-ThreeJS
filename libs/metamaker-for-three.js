@@ -535,7 +535,7 @@ async function largeUint8ArrayToString(uint8arr) {
     const reader = new FileReader();
 
     reader.onload = function (e) {
-      resolve(e.target?.result);
+      resolve(e.target.result);
     };
 
     reader.readAsText(blob);
