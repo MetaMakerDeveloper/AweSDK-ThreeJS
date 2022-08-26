@@ -7,7 +7,11 @@ module.exports = defineConfig({
   lintOnSave: false,
   outputDir: "./libs",
   configureWebpack: (config) => {
+<<<<<<< HEAD
     config.entry = "./src/lib/index.ts";
+=======
+    config.entry = "./src/lib/metamaker-for-three.js";
+>>>>>>> temp
     const wasmExtensionRegExp = /\.wasm$/;
     config.devtool = false;
     config.resolve.extensions.push(".wasm");
