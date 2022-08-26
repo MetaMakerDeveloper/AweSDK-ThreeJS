@@ -45,18 +45,18 @@ export function resetMaterial(model) {
       n.material.depthWrite = true;
     }
    
-    if (n.material != null) {
-      // eslint-disable-next-line no-empty
-      if (n.material.name.indexOf("BrownEye") >= 0) {
-        // console.log("///////////////////////////////////");
-        // console.log(n.material.name);
-        // console.log(n.material);
-        // eslint-disable-next-line no-empty
-      }
-      else {
-        n.material.roughness = 0.8;
-      }
-    }
+    // if (n.material != null) {
+    //   // eslint-disable-next-line no-empty
+    //   if (n.material.name.indexOf("BrownEye") >= 0) {
+    //     // console.log("///////////////////////////////////");
+    //     // console.log(n.material.name);
+    //     // console.log(n.material);
+    //     // eslint-disable-next-line no-empty
+    //   }
+    //   else {
+    //     n.material.roughness = 0.8;
+    //   }
+    // }
   });
   hairs.forEach((n) => {
     materialFirstPass.map = n.material.map;
