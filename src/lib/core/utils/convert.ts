@@ -1,8 +1,8 @@
 import * as THREE from "three";
 let bodyMorphTargetDictionary = {};
 let teethMorphTargetDictionary = {};
-let bodyMeshName;
-let Tooth_downMeshName;
+export let bodyMeshName;
+export let Tooth_downMeshName;
 export function setBodyMorphTargetDictionary(name, map) {
   bodyMorphTargetDictionary = map;
   console.log(bodyMorphTargetDictionary);

@@ -1,7 +1,12 @@
 import * as THREE from "three";
 import { GLTFLoader } from "./utils/GLTFLoader";
 import { resetMaterial } from "./utils/ResetMaterial";
-import { setBodyMorphTargetDictionary, setTeethMorphTargetDictionary } from "./utils/convert";
+import {
+  setBodyMorphTargetDictionary,
+  setTeethMorphTargetDictionary,
+  bodyMeshName,
+  Tooth_downMeshName,
+} from "./utils/convert";
 import { downloadAnimation, loadAnimationData } from "./utils/downloadAnimation";
 
 import Convert from "./utils/convert";
@@ -53,11 +58,11 @@ function setModelInfo(model) {
 }
 
 function loadTTSTeethAnimation(url: string): Promise<THREE.AnimationClip> {
-  return downloadAnimation(url, "tooth_down");
+  return downloadAnimation(url, Tooth_downMeshName);
 }
 
 function loadTTSEmoAnimation(url: string): Promise<THREE.AnimationClip> {
-  return downloadAnimation(url, "pingjunren");
+  return downloadAnimation(url, bodyMeshName);
 }
 
 export {
