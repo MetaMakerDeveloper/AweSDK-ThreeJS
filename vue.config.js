@@ -7,13 +7,9 @@ if (process.env.VUE_BUILD_APP == "mlib") {
 } else {
   module.exports = defineConfig({
     transpileDependencies: true,
-<<<<<<< HEAD
     pages: {
       index: "./examples/example.ts",
     },
-=======
-
->>>>>>> temp
     configureWebpack: (config) => {
       const wasmExtensionRegExp = /\.wasm$/;
       // config.module.rules.push({

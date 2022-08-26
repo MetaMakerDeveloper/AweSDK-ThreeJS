@@ -3,16 +3,10 @@
     "target": "esnext",
     "module": "esnext",
     "strict": false,
-<<<<<<< HEAD
     "allowJs": true,
     "jsx": "preserve",
     "declaration": true,
     "moduleResolution": "node",
-=======
-    "jsx": "preserve",
-    "moduleResolution": "node",
-    "allowJs": true,
->>>>>>> temp
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -20,18 +14,13 @@
     "useDefineForClassFields": true,
     "sourceMap": true,
     "baseUrl": ".",
-<<<<<<< HEAD
     "types": ["webpack-env", "jest"],
-=======
-    "types": ["webpack-env"],
->>>>>>> temp
     "paths": {
       "@/*": ["src/*"]
     },
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },
   "include": [
-<<<<<<< HEAD
     "examples/**/*.ts",
     "examples/**/*.tsx",
     "examples/**/*.vue",
@@ -40,16 +29,3 @@
   ],
   "exclude": ["node_modules"]
 }
-=======
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue",
-    "tests/**/*.ts",
-    "tests/**/*.tsx",
-    "src/lib/utils/downloadData.js",
-    "src/lib/utils/ResetMaterial.js"
-  ],
-  "exclude": ["node_modules"]
-}
-
->>>>>>> temp
