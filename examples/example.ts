@@ -292,6 +292,7 @@ async function replaceIdol(opts: string | Uint8Array) {
 async function handleChangePose(value: string) {
   const animateJSON = await MMFT.core.loadAnimationData(value);
   const clip = MMFT.core.Convert(animateJSON);
+  console.warn(`pose clip `, clip);
   const action = mixer.clipAction(clip);
   while (activeActions.length) {
     const action = activeActions.pop();
@@ -333,9 +334,9 @@ async function handleTTS(audio, teeth, emo) {
 
 async function fetchTTSToAnim(text: string) {
   const tts = {
-    voice_name: "智能客服_静静",
-    speed: 50,
-    volume: 30,
+    voice_name: "zh-CN-XiaoxiaoNeural",
+    speed: 42,
+    volume: 100,
   };
   let response: any = await fetch("//open.metamaker.cn/api/tts/v1/text_to_anim", {
     method: "post",
