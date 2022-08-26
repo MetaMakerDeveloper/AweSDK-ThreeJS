@@ -109,9 +109,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var three__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! three */ "three");
 /* harmony import */ var three__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(three__WEBPACK_IMPORTED_MODULE_0__);
+/* eslint-disable*/
 
 function resetMaterial(model) {
-  const materialBackSide = new three__WEBPACK_IMPORTED_MODULE_0__.MeshStandardMaterial({
+  const materialBackSide = new three__WEBPACK_IMPORTED_MODULE_0__.MeshBasicMaterial({
     blending: three__WEBPACK_IMPORTED_MODULE_0__.NormalBlending,
     blendEquation: three__WEBPACK_IMPORTED_MODULE_0__.AddEquation,
     blendSrc: three__WEBPACK_IMPORTED_MODULE_0__.SrcAlphaFactor,
@@ -121,7 +122,7 @@ function resetMaterial(model) {
     transparent: true,
     side: three__WEBPACK_IMPORTED_MODULE_0__.BackSide
   });
-  const materialFrontSide = new three__WEBPACK_IMPORTED_MODULE_0__.MeshStandardMaterial({
+  const materialFrontSide = new three__WEBPACK_IMPORTED_MODULE_0__.MeshBasicMaterial({
     blending: three__WEBPACK_IMPORTED_MODULE_0__.NormalBlending,
     blendEquation: three__WEBPACK_IMPORTED_MODULE_0__.AddEquation,
     blendSrc: three__WEBPACK_IMPORTED_MODULE_0__.SrcAlphaFactor,
@@ -131,7 +132,7 @@ function resetMaterial(model) {
     transparent: true,
     side: three__WEBPACK_IMPORTED_MODULE_0__.FrontSide
   });
-  const materialDoubleSide = new three__WEBPACK_IMPORTED_MODULE_0__.MeshStandardMaterial({
+  const materialDoubleSide = new three__WEBPACK_IMPORTED_MODULE_0__.MeshBasicMaterial({
     blending: three__WEBPACK_IMPORTED_MODULE_0__.NormalBlending,
     blendEquation: three__WEBPACK_IMPORTED_MODULE_0__.AddEquation,
     blendSrc: three__WEBPACK_IMPORTED_MODULE_0__.SrcAlphaFactor,
@@ -141,7 +142,7 @@ function resetMaterial(model) {
     transparent: true,
     side: three__WEBPACK_IMPORTED_MODULE_0__.DoubleSide
   });
-  const materialFirstPass = new three__WEBPACK_IMPORTED_MODULE_0__.MeshStandardMaterial({
+  const materialFirstPass = new three__WEBPACK_IMPORTED_MODULE_0__.MeshBasicMaterial({
     alphaTest: 0.9,
     transparent: false,
     side: three__WEBPACK_IMPORTED_MODULE_0__.DoubleSide
@@ -152,15 +153,19 @@ function resetMaterial(model) {
       hairs.push(n);
     } else if (n.material != null && n.material.name.indexOf("DiffNormalPacked") >= 0) {
       n.material.depthWrite = true;
-    }
+    } // if (n.material != null) {
+    //   // eslint-disable-next-line no-empty
+    //   if (n.material.name.indexOf("BrownEye") >= 0) {
+    //     // console.log("///////////////////////////////////");
+    //     // console.log(n.material.name);
+    //     // console.log(n.material);
+    //     // eslint-disable-next-line no-empty
+    //   }
+    //   else {
+    //     n.material.roughness = 0.8;
+    //   }
+    // }
 
-    if (n.material != null) {
-      // eslint-disable-next-line no-empty
-      if (n.name.indexOf("EyeLeft") >= 0 && n.material.name.indexOf("BrownEye") >= 0) {// eslint-disable-next-line no-empty
-      } else if (n.name.indexOf("EyeRight") >= 0 && n.material.name.indexOf("BrownEye") >= 0) {} else {
-        n.material.roughness = 0.8;
-      }
-    }
   });
   hairs.forEach(n => {
     materialFirstPass.map = n.material.map;
@@ -207,6 +212,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+/* eslint-disable */
 
 let bodyMorphTargetDictionary = {};
 let teethMorphTargetDictionary = {};
