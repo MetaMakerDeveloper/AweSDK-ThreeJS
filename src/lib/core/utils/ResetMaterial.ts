@@ -1,7 +1,7 @@
+/* eslint-disable*/
 import * as THREE from "three";
-import { MeshStandardMaterial, Vector2 } from "three";
 export function resetMaterial(model) {
-  const materialBackSide = new THREE.MeshStandardMaterial({
+  const materialBackSide = new THREE.MeshBasicMaterial({
     blending: THREE.NormalBlending,
     blendEquation: THREE.AddEquation,
     blendSrc: THREE.SrcAlphaFactor,
@@ -11,7 +11,7 @@ export function resetMaterial(model) {
     transparent: true,
     side: THREE.BackSide,
   });
-  const materialFrontSide = new THREE.MeshStandardMaterial({
+  const materialFrontSide = new THREE.MeshBasicMaterial({
     blending: THREE.NormalBlending,
     blendEquation: THREE.AddEquation,
     blendSrc: THREE.SrcAlphaFactor,
@@ -21,7 +21,7 @@ export function resetMaterial(model) {
     transparent: true,
     side: THREE.FrontSide,
   });
-  const materialDoubleSide = new THREE.MeshStandardMaterial({
+  const materialDoubleSide = new THREE.MeshBasicMaterial({
     blending: THREE.NormalBlending,
     blendEquation: THREE.AddEquation,
     blendSrc: THREE.SrcAlphaFactor,
@@ -32,7 +32,7 @@ export function resetMaterial(model) {
     side: THREE.DoubleSide,
   });
 
-  const materialFirstPass = new THREE.MeshStandardMaterial({
+  const materialFirstPass = new THREE.MeshBasicMaterial({
     alphaTest: 0.9,
     transparent: false,
     side: THREE.DoubleSide,
@@ -44,13 +44,17 @@ export function resetMaterial(model) {
     } else if (n.material != null && n.material.name.indexOf("DiffNormalPacked") >= 0) {
       n.material.depthWrite = true;
     }
+   
     if (n.material != null) {
       // eslint-disable-next-line no-empty
-      if (n.name.indexOf("EyeLeft") >= 0 && n.material.name.indexOf("BrownEye") >= 0) {
+      if (n.material.name.indexOf("BrownEye") >= 0) {
+        // console.log("///////////////////////////////////");
+        // console.log(n.material.name);
+        // console.log(n.material);
         // eslint-disable-next-line no-empty
-      } else if (n.name.indexOf("EyeRight") >= 0 && n.material.name.indexOf("BrownEye") >= 0) {
-      } else {
-        (n.material as MeshStandardMaterial).roughness = 0.8;
+      }
+      else {
+        n.material.roughness = 0.8;
       }
     }
   });

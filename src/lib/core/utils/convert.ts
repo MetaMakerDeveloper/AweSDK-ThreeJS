@@ -1,3 +1,4 @@
+/* eslint-disable */ 
 import * as THREE from "three";
 let bodyMorphTargetDictionary = {};
 let teethMorphTargetDictionary = {};

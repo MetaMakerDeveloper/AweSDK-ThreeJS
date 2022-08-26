@@ -36,7 +36,7 @@ module.exports = {
   // 在 *.vue 文件中 Script 和 Style 标签内的代码是否缩进 default:false
   vueIndentScriptAndStyle: false,
   // 末尾换行符 default:"lf"
-  endOfLine: "lf",
+  //endOfLine: "lf",
   // default:"auto"
   embeddedLanguageFormatting: "auto",
   overrides: [
