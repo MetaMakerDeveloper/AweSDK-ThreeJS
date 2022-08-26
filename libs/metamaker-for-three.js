@@ -85,11 +85,11 @@ function setModelInfo(model) {
 }
 
 function loadTTSTeethAnimation(url) {
-  return (0,_utils_downloadAnimation__WEBPACK_IMPORTED_MODULE_3__.downloadAnimation)(url, "tooth_down");
+  return (0,_utils_downloadAnimation__WEBPACK_IMPORTED_MODULE_3__.downloadAnimation)(url, _utils_convert__WEBPACK_IMPORTED_MODULE_2__.Tooth_downMeshName);
 }
 
 function loadTTSEmoAnimation(url) {
-  return (0,_utils_downloadAnimation__WEBPACK_IMPORTED_MODULE_3__.downloadAnimation)(url, "pingjunren");
+  return (0,_utils_downloadAnimation__WEBPACK_IMPORTED_MODULE_3__.downloadAnimation)(url, _utils_convert__WEBPACK_IMPORTED_MODULE_2__.bodyMeshName);
 }
 
 
@@ -190,6 +190,8 @@ function resetMaterial(model) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Tooth_downMeshName": function() { return /* binding */ Tooth_downMeshName; },
+/* harmony export */   "bodyMeshName": function() { return /* binding */ bodyMeshName; },
 /* harmony export */   "default": function() { return /* binding */ Convert; },
 /* harmony export */   "setBodyMorphTargetDictionary": function() { return /* binding */ setBodyMorphTargetDictionary; },
 /* harmony export */   "setTeethMorphTargetDictionary": function() { return /* binding */ setTeethMorphTargetDictionary; }
