@@ -1,6 +1,6 @@
 {
   "name": "metamaker-for-three",
-  "version": "0.1.4-0",
+  "version": "0.1.5-0",
   "private": true,
   "main": "libs/metamaker-for-three.js",
   "types": "types/index.d.ts",
