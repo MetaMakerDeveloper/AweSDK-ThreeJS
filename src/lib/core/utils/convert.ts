@@ -43,28 +43,33 @@ export default function Convert(fp, isEmotion = false) {
         const ys = (arry[i + 1]["Keys"] as Array<JSON>).map((k) => k["Value"] as number);
         const zs = (arry[i + 2]["Keys"] as Array<JSON>).map((k) => k["Value"] as number);
         let vs = new Float32Array();
-        if (str.indexOf("Rotation") < 0) {
+      
+      
+      
+        if (str.indexOf("Position") > 0) {
           vs = new Float32Array(xs.length * 3);
-          for (let j = 0; j < xs.length; j++) {
+          for (var j = 0; j < xs.length; j++) {
+            vs[j * 3] = -xs[j];
+            vs[j * 3 + 1] = ys[j];
+            vs[j * 3 + 2] = zs[j];
+          }
+          var track = new THREE.KeyframeTrack(trackName, times, vs, THREE.InterpolateLinear);
+        } else if (str.indexOf("Scale") > 0) {
+          vs = new Float32Array(xs.length * 3);
+          for (var j = 0; j < xs.length; j++) {
             vs[j * 3] = xs[j];
             vs[j * 3 + 1] = ys[j];
             vs[j * 3 + 2] = zs[j];
           }
-          const track = new THREE.KeyframeTrack(trackName, times, vs, THREE.InterpolateLinear);
-          // if(trackName.indexOf("hips") >= 0&&str.indexOf("Position") >= 0)
-          // {
-          //   console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"+str);
-          //   console.log(track);
-          //   kfs.push(track);
-          // }
+          var track = new THREE.KeyframeTrack(trackName, times, vs, THREE.InterpolateLinear);
         } else {
-          const ws = (arry[i + 3]["Keys"] as Array<JSON>).map((k) => k["Value"] as number);
+          var ws = arry[i + 3]["Keys"].map((k) => k["Value"]);
           vs = new Float32Array(xs.length * 4);
-          for (let j = 0; j < xs.length; j++) {
-            const q = new THREE.Quaternion(xs[j], ys[j], zs[j], ws[j]);
+          for (var j = 0; j < xs.length; j++) {
+            var q = new THREE.Quaternion(xs[j], ys[j], zs[j], ws[j]);
             vs[j * 4] = q.x;
-            vs[j * 4 + 1] = q.y;
-            vs[j * 4 + 2] = q.z;
+            vs[j * 4 + 1] = -q.y;
+            vs[j * 4 + 2] = -q.z;
             vs[j * 4 + 3] = q.w;
           }
           const track = new THREE.KeyframeTrack(trackName, times, vs, THREE.InterpolateLinear);
