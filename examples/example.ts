@@ -13,6 +13,13 @@ let gui: GUI;
 let stats;
 let lookTarget;
 let mixer: THREE.AnimationMixer;
+const canvasRect: {
+  width: number;
+  height: number;
+} = {
+  width: 0,
+  height: 0,
+};
 
 const params = {
   name: "黑镜官网小静",
@@ -71,7 +78,9 @@ window.onload = async () => {
   const app = document.querySelector("#app");
   function onResize() {
     console.log(`resize`);
-    camera.aspect = window.innerWidth / window.innerHeight;
+    canvasRect.width = window.innerWidth;
+    canvasRect.height = window.innerHeight;
+    camera.aspect = canvasRect.width / canvasRect.height;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
   }
@@ -79,8 +88,10 @@ window.onload = async () => {
 
   // 创建renderer
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  canvasRect.width = window.innerWidth;
+  canvasRect.height = window.innerHeight;
   renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(canvasRect.width, canvasRect.height);
   renderer.outputEncoding = THREE.sRGBEncoding;
   app.appendChild(renderer.domElement);
   // 创建Scene
@@ -193,7 +204,19 @@ function addGui() {
       idol.position.z = value.z;
     }
   });
-
+  const canvasGui = gui.addFolder("Canvas");
+  canvasGui.add(canvasRect, "width", 0, 20000, 1).onChange((value) => {
+    canvasRect.width = value;
+    renderer.setSize(canvasRect.width, canvasRect.height);
+    camera.aspect = canvasRect.width / canvasRect.height;
+    camera.updateProjectionMatrix();
+  });
+  canvasGui.add(canvasRect, "height", 0, 20000, 1).onChange((value) => {
+    canvasRect.height = value;
+    renderer.setSize(canvasRect.width, canvasRect.height);
+    camera.aspect = canvasRect.width / canvasRect.height;
+    camera.updateProjectionMatrix();
+  });
   const cameraGui = gui.addFolder("Camera ");
   cameraGui.add(camera.position, "x", -100, 100, 0.01);
   cameraGui.add(camera.position, "y", -100, 100, 0.01);
@@ -201,10 +224,15 @@ function addGui() {
   cameraGui.add(camera, "near", 0, 10000, 0.1);
   cameraGui.add(camera, "far", 0, 100000, 0.1);
   cameraGui.add(camera, "fov", 0, 180, 0.1);
+  cameraGui.add(camera, "aspect", 0, 2, 0.1).onChange(() => {
+    camera.updateMatrix();
+    camera.updateProjectionMatrix();
+  });
   cameraGui.onChange(() => {
     camera.updateMatrix();
     camera.updateProjectionMatrix();
   });
+
   const cameraRotationGui = gui.addFolder("Camera Rotation Euler");
   cameraRotationGui.add(camera.rotation, "x", -Math.PI, Math.PI, 0.01);
   cameraRotationGui.add(camera.rotation, "y", -Math.PI, Math.PI, 0.01);
