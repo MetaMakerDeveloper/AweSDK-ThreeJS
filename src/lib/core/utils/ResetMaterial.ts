@@ -69,117 +69,7 @@ export function resetMaterial(model) {
       n.material.depthWrite = true;
     }
    
-    if (n.material != null) {
-      if (n.material.name.indexOf("head_sss") >= 0)//||n.material.name.indexOf("body_sss") >= 0) 
-      {
-       
-        const shader = SubsurfaceScatteringShader;
-        var material = new THREE.ShaderMaterial( {
-				uniforms: THREE.UniformsUtils.clone( SubsurfaceScatteringShader.uniforms ),
-				vertexShader: shader.vertexShader,
-				fragmentShader: shader.fragmentShader,
-			} );
-if(true)
-{
-
-
-    var source=n.material;
-
-    var m:any=material;
-
-    m.blending = source.blending;
-    m.side = source.side;
-    m.vertexColors = source.vertexColors;
-    m.opacity = source.opacity;
-    m.transparent = source.transparent;
-    m.blendSrc = source.blendSrc;
-    m.blendDst = source.blendDst;
-    m.blendEquation = source.blendEquation;
-    m.blendSrcAlpha = source.blendSrcAlpha;
-    m.blendDstAlpha = source.blendDstAlpha;
-    m.blendEquationAlpha = source.blendEquationAlpha;
-    m.depthFunc = source.depthFunc;
-    m.depthTest = source.depthTest;
-    m.depthWrite = source.depthWrite;
-    m.stencilWriteMask = source.stencilWriteMask;
-    m.stencilFunc = source.stencilFunc;
-    m.stencilRef = source.stencilRef;
-    m.stencilFuncMask = source.stencilFuncMask;
-    m.stencilFail = source.stencilFail;
-    m.stencilZFail = source.stencilZFail;
-    m.stencilZPass = source.stencilZPass;
-    m.stencilWrite = source.stencilWrite;
-    const srcPlanes = source.clippingPlanes;
-    let dstPlanes = null;
-
-    if (srcPlanes !== null) {
-      const n = srcPlanes.length;
-      dstPlanes = new Array(n);
-
-      for (let i = 0; i !== n; ++i) {
-        dstPlanes[i] = srcPlanes[i].clone();
-      }
-    }
-
-    m.clippingPlanes = dstPlanes;
-    m.clipIntersection = source.clipIntersection;
-    m.clipShadows = source.clipShadows;
-    m.shadowSide = source.shadowSide;
-    m.colorWrite = source.colorWrite;
-    m.precision = source.precision;
-    m.polygonOffset = source.polygonOffset;
-    m.polygonOffsetFactor = source.polygonOffsetFactor;
-    m.polygonOffsetUnits = source.polygonOffsetUnits;
-    m.dithering = source.dithering;
-    m.alphaTest = source.alphaTest;
-    m.alphaToCoverage = source.alphaToCoverage;
-    m.premultipliedAlpha = source.premultipliedAlpha;
-    m.visible = source.visible;
-    m.toneMapped = source.toneMapped;
-    m.userData = JSON.parse(JSON.stringify(source.userData));
-
-    material.defines = { 'STANDARD': '' };
-
-		m.color= source.color.clone();
-		m.roughness = source.roughness;
-		m.metalness = source.metalness;
-		m.map = source.map;
-		m.lightMap = source.lightMap;
-		m.lightMapIntensity = source.lightMapIntensity;
-		m.aoMap = source.aoMap;
-		m.aoMapIntensity = source.aoMapIntensity;
-		m.emissive=source.emissive.clone();
-		m.emissiveMap = source.emissiveMap;
-		m.emissiveIntensity = source.emissiveIntensity;
-		m.bumpMap = source.bumpMap;
-		m.bumpScale = source.bumpScale;
-		m.normalMap = source.normalMap;
-		m.normalMapType = source.normalMapType;
-		m.normalScale=source.normalScale.clone(); 
-		m.displacementMap = source.displacementMap;
-		m.displacementScale = source.displacementScale;
-		m.displacementBias = source.displacementBias;
-		m.roughnessMap = source.roughnessMap;
-		m.metalnessMap = source.metalnessMap;
-		m.alphaMap = source.alphaMap;
-		m.envMap = source.envMap;
-		m.envMapIntensity = source.envMapIntensity;
-		m.wireframe = source.wireframe;
-		m.wireframeLinewidth = source.wireframeLinewidth;
-		m.wireframeLinecap = source.wireframeLinecap;
-		m.wireframeLinejoin = source.wireframeLinejoin;
-		m.flatShading = source.flatShading;
-		m.fog = source.fog;
-
-    m.isMeshStandardMaterial=true;
-   
-  }
-  console.log(n.material);
-    n.material=material;
-    console.log(n.material);
-    }
-    }
-
+  
   });
   hairs.forEach((n) => {
     const materialFirstPass = new THREE.MeshBasicMaterial({
@@ -221,4 +111,118 @@ if(true)
     mesh2.material = materialFrontSide;
     mesh2.renderOrder = n.renderOrder + 2;
   });
+}
+function resetSSSMaterial(n) 
+{
+  if (n.material != null) {
+    if (n.material.name.indexOf("head_sss") >= 0)//||n.material.name.indexOf("body_sss") >= 0) 
+    {
+     
+      const shader = SubsurfaceScatteringShader;
+      var material = new THREE.ShaderMaterial( {
+      uniforms: THREE.UniformsUtils.clone( SubsurfaceScatteringShader.uniforms ),
+      vertexShader: shader.vertexShader,
+      fragmentShader: shader.fragmentShader,
+    } );
+if(true)
+{
+
+
+  var source=n.material;
+
+  var m:any=material;
+
+  m.blending = source.blending;
+  m.side = source.side;
+  m.vertexColors = source.vertexColors;
+  m.opacity = source.opacity;
+  m.transparent = source.transparent;
+  m.blendSrc = source.blendSrc;
+  m.blendDst = source.blendDst;
+  m.blendEquation = source.blendEquation;
+  m.blendSrcAlpha = source.blendSrcAlpha;
+  m.blendDstAlpha = source.blendDstAlpha;
+  m.blendEquationAlpha = source.blendEquationAlpha;
+  m.depthFunc = source.depthFunc;
+  m.depthTest = source.depthTest;
+  m.depthWrite = source.depthWrite;
+  m.stencilWriteMask = source.stencilWriteMask;
+  m.stencilFunc = source.stencilFunc;
+  m.stencilRef = source.stencilRef;
+  m.stencilFuncMask = source.stencilFuncMask;
+  m.stencilFail = source.stencilFail;
+  m.stencilZFail = source.stencilZFail;
+  m.stencilZPass = source.stencilZPass;
+  m.stencilWrite = source.stencilWrite;
+  const srcPlanes = source.clippingPlanes;
+  let dstPlanes = null;
+
+  if (srcPlanes !== null) {
+    const n = srcPlanes.length;
+    dstPlanes = new Array(n);
+
+    for (let i = 0; i !== n; ++i) {
+      dstPlanes[i] = srcPlanes[i].clone();
+    }
+  }
+
+  m.clippingPlanes = dstPlanes;
+  m.clipIntersection = source.clipIntersection;
+  m.clipShadows = source.clipShadows;
+  m.shadowSide = source.shadowSide;
+  m.colorWrite = source.colorWrite;
+  m.precision = source.precision;
+  m.polygonOffset = source.polygonOffset;
+  m.polygonOffsetFactor = source.polygonOffsetFactor;
+  m.polygonOffsetUnits = source.polygonOffsetUnits;
+  m.dithering = source.dithering;
+  m.alphaTest = source.alphaTest;
+  m.alphaToCoverage = source.alphaToCoverage;
+  m.premultipliedAlpha = source.premultipliedAlpha;
+  m.visible = source.visible;
+  m.toneMapped = source.toneMapped;
+  m.userData = JSON.parse(JSON.stringify(source.userData));
+
+  material.defines = { 'STANDARD': '' };
+
+  m.color= source.color.clone();
+  m.roughness = source.roughness;
+  m.metalness = source.metalness;
+  m.map = source.map;
+  m.lightMap = source.lightMap;
+  m.lightMapIntensity = source.lightMapIntensity;
+  m.aoMap = source.aoMap;
+  m.aoMapIntensity = source.aoMapIntensity;
+  m.emissive=source.emissive.clone();
+  m.emissiveMap = source.emissiveMap;
+  m.emissiveIntensity = source.emissiveIntensity;
+  m.bumpMap = source.bumpMap;
+  m.bumpScale = source.bumpScale;
+  m.normalMap = source.normalMap;
+  m.normalMapType = source.normalMapType;
+  m.normalScale=source.normalScale.clone(); 
+  m.displacementMap = source.displacementMap;
+  m.displacementScale = source.displacementScale;
+  m.displacementBias = source.displacementBias;
+  m.roughnessMap = source.roughnessMap;
+  m.metalnessMap = source.metalnessMap;
+  m.alphaMap = source.alphaMap;
+  m.envMap = source.envMap;
+  m.envMapIntensity = source.envMapIntensity;
+  m.wireframe = source.wireframe;
+  m.wireframeLinewidth = source.wireframeLinewidth;
+  m.wireframeLinecap = source.wireframeLinecap;
+  m.wireframeLinejoin = source.wireframeLinejoin;
+  m.flatShading = source.flatShading;
+  m.fog = source.fog;
+
+  m.isMeshStandardMaterial=true;
+ 
+}
+console.log(n.material);
+  n.material=material;
+  console.log(n.material);
+  }
+  }
+
 }
