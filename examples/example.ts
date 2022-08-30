@@ -22,8 +22,8 @@ const canvasRect: {
 };
 
 const params = {
-  name: "黑镜官网小静",
-  url: "http://timg.metaworks.cn/threejs_res/26720-92175-1660744961/character.gltf",
+  name: "虚拟人物女性",
+  url: "https://timg.metaworks.cn/threejs_res/3710978692c3adfcc93f932abe3057e3",
   自定义模型地址: "",
   pose: "",
   fadeIn: 0,
@@ -111,7 +111,7 @@ window.onload = async () => {
   controls.update();
   // 创建Idol
 
-  idol = await MMFT.core.loadGLTFModel(params.url);
+  await replaceIdol(params.url);
   mixer = new THREE.AnimationMixer(idol);
   scene.add(idol);
   addDefaultLights(scene);
@@ -308,8 +308,13 @@ async function replaceIdol(opts: string | Uint8Array) {
     idol.clear();
     idol = null;
   }
-  if (typeof opts == "string") {
+  if (typeof opts == "string" && opts.endsWith(".gltf")) {
     idol = await MMFT.core.loadGLTFModel(opts);
+  } else if (typeof opts == "string") {
+    const response = await fetch(opts, { method: "get" });
+    const buffer = await response.arrayBuffer();
+    const idolBuffer = await uncompress(new Uint8Array(buffer));
+    idol = await MMFT.core.parseGLTFModel(idolBuffer.buffer);
   } else {
     idol = await MMFT.core.parseGLTFModel(opts.buffer);
   }
@@ -454,5 +459,26 @@ function uncompressZipFile(file: File): Promise<Uint8Array> {
       resolve(glbBuffer);
     };
     fileReader.readAsArrayBuffer(file);
+  });
+}
+
+function uncompress(buffer: ArrayBuffer): Promise<Uint8Array> {
+  return new Promise((resolve) => {
+    const unzipper = new fflate.Unzip();
+    unzipper.register(fflate.UnzipInflate);
+    unzipper.onfile = (file) => {
+      // file.name is a string, file is a stream
+      if (!(file.name as string).endsWith(".glb")) {
+        return;
+      }
+      file.ondata = (err, dat, final) => {
+        // Stream output here
+        resolve(dat);
+      };
+      console.log("Reading:", file.name);
+
+      file.start();
+    };
+    unzipper.push(new Uint8Array(buffer), true);
   });
 }
