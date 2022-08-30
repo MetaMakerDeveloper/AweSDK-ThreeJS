@@ -249,17 +249,17 @@ function addGui() {
     camera.lookAt(lookTarget.x, lookTarget.y, lookTarget.z);
   });
 
-  const idolGui = gui.addFolder("替换人物");
+  // const idolGui = gui.addFolder("替换人物");
 
-  idolGui
-    .add(params, "name", {
-      黑镜官网小静: "http://timg.metaworks.cn/threejs_res/26720-92175-1660744961/character.gltf",
-      测试大黑: "http://timg.metaworks.cn/threejs_res/26720-92185-1661151875/character.gltf",
-      "小静(职业装)": "http://timg.metaworks.cn/threejs_res/26720-92184-1661151830/character.gltf",
-    })
-    .onChange(replaceIdol);
+  // idolGui
+  //   .add(params, "name", {
+  //     黑镜官网小静: "http://timg.metaworks.cn/threejs_res/26720-92175-1660744961/character.gltf",
+  //     测试大黑: "http://timg.metaworks.cn/threejs_res/26720-92185-1661151875/character.gltf",
+  //     "小静(职业装)": "http://timg.metaworks.cn/threejs_res/26720-92184-1661151830/character.gltf",
+  //   })
+  //   .onChange(replaceIdol);
 
-  idolGui.add(params, "自定义模型地址").onChange(replaceIdol);
+  // idolGui.add(params, "自定义模型地址").onChange(replaceIdol);
 
   const animateGui = gui.addFolder("Pose Animate");
   animateGui.add(params, "fadeIn", 0, 10, 0.01);
