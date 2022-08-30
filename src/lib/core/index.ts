@@ -1,3 +1,4 @@
+/* eslint-disable */
 import * as THREE from "three";
 import { GLTFLoader } from "./utils/GLTFLoader";
 import { resetMaterial } from "./utils/ResetMaterial";
@@ -30,6 +31,11 @@ function parseGLTFModel(buffer: ArrayBuffer): Promise<THREE.Group> {
       (gltf) => {
         const model = gltf.scene;
         setModelInfo(model);
+        gltf.scene.traverse((child) => {
+          if ( child.type == 'SkinnedMesh' ) {
+            child.frustumCulled = false;
+          }
+    });
         resolve(model);
       },
       (e) => {
