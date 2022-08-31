@@ -4,6 +4,8 @@ import MMFT from "@/lib";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Stats from "three/examples/jsm/libs/stats.module.js";
 import * as fflate from "fflate";
+import CryptoJS from "crypto-js";
+import { encode } from "js-base64";
 let renderer;
 let scene;
 let camera: THREE.PerspectiveCamera;
@@ -13,6 +15,8 @@ let gui: GUI;
 let stats;
 let lookTarget;
 let mixer: THREE.AnimationMixer;
+let ttsAuth: string;
+
 const canvasRect: {
   width: number;
   height: number;
@@ -23,7 +27,7 @@ const canvasRect: {
 
 const params = {
   name: "虚拟人物女性",
-  url: "https://timg.metaworks.cn/threejs_res/3710978692c3adfcc93f932abe3057e3",
+  url: "./f9d25cc22be065191dca0f2ac7b248fd.zip",
   自定义模型地址: "",
   pose: "",
   fadeIn: 0,
@@ -32,6 +36,8 @@ const params = {
   audioURL: "",
   teethAnimURL: "",
   emoAnimURL: "",
+  appKey: "",
+  appSecret: "",
   发送TTS请求: async function () {
     // todo
     const [audio, teeth, emo] = await fetchTTSToAnim(params.ttsText);
@@ -268,6 +274,12 @@ function addGui() {
   animateGui.add(params, "pose").onChange(handleChangePose);
 
   const ttsGui = gui.addFolder("tts");
+  ttsGui.add(params, "appKey").onChange(() => {
+    makeSignCode();
+  });
+  ttsGui.add(params, "appSecret").onChange(() => {
+    makeSignCode();
+  });
   ttsGui.add(params, "ttsText");
   ttsGui.add(params, "发送TTS请求");
   ttsGui.add(params, "audioURL").onChange(async (value) => {
@@ -371,10 +383,11 @@ async function fetchTTSToAnim(text: string) {
     speed: 42,
     volume: 100,
   };
-  let response: any = await fetch("//open.metamaker.cn/api/tts/v1/text_to_anim", {
+  let response: any = await fetch("//open.metamaker.cn/api/openmm/v1/text_to_anim", {
     method: "post",
     headers: {
       "Content-Type": "application/json",
+      Authorization: ttsAuth,
     },
     body: JSON.stringify({
       text: text,
@@ -482,3 +495,43 @@ function uncompress(buffer: ArrayBuffer): Promise<Uint8Array> {
     unzipper.push(new Uint8Array(buffer), true);
   });
 }
+
+function makeSignCode() {
+  const convertTextToUint8Array = (text: string) => {
+    return Array.from(text).map((letter) => letter.charCodeAt(0));
+  };
+  const convertWordArrayToUint8Array = (wordArray) => {
+    const len = wordArray.words.length;
+    const uint8Array = new Uint8Array(len << 2);
+    let offset = 0;
+    let word;
+    for (let i = 0; i < len; i++) {
+      word = wordArray.words[i];
+      uint8Array[offset++] = word >> 24;
+      uint8Array[offset++] = (word >> 16) & 0xff;
+      uint8Array[offset++] = (word >> 8) & 0xff;
+      uint8Array[offset++] = word & 0xff;
+    }
+    return uint8Array;
+  };
+
+  const appKey = params.appKey;
+  const appSecret = params.appSecret;
+  const timestamp = Math.floor(new Date().getTime() / 1000);
+  const message = `${timestamp}:${appKey}`;
+  const wordsArray = CryptoJS.HmacSHA256(message, appSecret);
+  const hashSuffix = convertWordArrayToUint8Array(wordsArray);
+  const hashPrefix = convertTextToUint8Array(`${timestamp}:`);
+  const totalArray = new Uint8Array(hashPrefix.length + hashSuffix.length);
+  totalArray.set(hashPrefix);
+  totalArray.set(hashSuffix, hashPrefix.length);
+
+  const base64 = encode(String.fromCharCode.apply(null, totalArray));
+  ttsAuth = `AW ${appKey}:${base64}`;
+}
+
+makeSignCode();
+
+setInterval(() => {
+  makeSignCode();
+}, 60 * 1000 * 10);
