@@ -1,7 +1,7 @@
 /* eslint-disable */
 import * as THREE from "three";
 import { GLTFLoader } from "./utils/GLTFLoader";
-import { resetMaterial } from "./utils/ResetMaterial";
+import { resetMaterial ,resetPolygonOffset} from "./utils/ResetMaterial";
 import {
   setBodyMorphTargetDictionary,
   setTeethMorphTargetDictionary,
@@ -17,6 +17,11 @@ function loadGLTFModel(url: string): Promise<THREE.Group> {
     loader.load(url, (gltf) => {
       const model = gltf.scene;
       setModelInfo(model);
+      gltf.scene.traverse((child) => {
+        if ( child.type == 'SkinnedMesh' ) {
+          child.frustumCulled = false;
+        }
+      });
       resolve(model);
     });
   });
@@ -35,7 +40,7 @@ function parseGLTFModel(buffer: ArrayBuffer): Promise<THREE.Group> {
           if ( child.type == 'SkinnedMesh' ) {
             child.frustumCulled = false;
           }
-    });
+        });
         resolve(model);
       },
       (e) => {
@@ -54,7 +59,7 @@ function setModelInfo(model) {
   }
   setBodyMorphTargetDictionary(body.name, body.morphTargetDictionary);
   let teeth = model.getObjectByName("tooth_down") as THREE.Mesh;
-  if (!teeth || !teeth.morphTargetDictionary) {
+  if (!teeth.morphTargetDictionary) {
     teeth = teeth.children[0] as THREE.Mesh;
   }
   setTeethMorphTargetDictionary(teeth.name, teeth.morphTargetDictionary);
@@ -79,4 +84,5 @@ export {
   parseGLTFModel,
   loadTTSTeethAnimation,
   loadTTSEmoAnimation,
+  resetPolygonOffset
 };

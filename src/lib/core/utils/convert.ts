@@ -43,9 +43,6 @@ export default function Convert(fp, isEmotion = false) {
         const ys = (arry[i + 1]["Keys"] as Array<JSON>).map((k) => k["Value"] as number);
         const zs = (arry[i + 2]["Keys"] as Array<JSON>).map((k) => k["Value"] as number);
         let vs = new Float32Array();
-      
-      
-      
         if (str.indexOf("Position") > 0) {
           vs = new Float32Array(xs.length * 3);
           for (var j = 0; j < xs.length; j++) {
