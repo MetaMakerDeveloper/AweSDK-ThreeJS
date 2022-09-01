@@ -67,18 +67,22 @@ export function resetMaterial(model) {
     if (n.material != null ){
       if(n.material.name.indexOf("Hair") >= 0) {
       hairs.push(n);
-    } else if (n.material.name.indexOf("DiffNormalPacked") >= 0||n.material.name.indexOf("Custom/Diff") >= 0) {
-      n.material.depthWrite = true;
-    }else{
-     // n.material.roughness=0.8;
+      } else if (n.material.name.indexOf("DiffNormalPacked") >= 0||n.material.name.indexOf("Custom/Diff") >= 0) {
+       n.material.depthWrite = true;
+       n.material.roughness=1;
+       //hairs.push(n);
+      }else{
+      // n.material.roughness=0.8;
+      }
+    resetSSSMaterial(n) ;
     }
-   resetSSSMaterial(n) ;
-    }});
+   }
+  );
 
    
   hairs.forEach((n) => {
     const materialFirstPass = new THREE.MeshBasicMaterial({
-      alphaTest: 0.9,
+      alphaTest: 0.99,
       transparent: false,
       side: THREE.DoubleSide,
     });
@@ -107,8 +111,23 @@ export function resetMaterial(model) {
     materialFrontSide.map = n.material.map;
     materialFirstPass.name=n.material.name+"materialFirstPass";
     materialBackSide.name=n.material.name+"materialBackSide";
-    materialFirstPass.name=n.material.name+"materialFirstPass";
+    materialFrontSide.name=n.material.name+"materialFrontSide";
+    
+    // if(n.material.name.indexOf("Hair") < 0) {
+    //   materialFirstPass.polygonOffset=true;
+    //   materialFirstPass.polygonOffsetFactor=-1.0
+    //   materialFirstPass.polygonOffsetUnits =-10000.0;
+    //   materialBackSide.polygonOffset=true;
+    //   materialBackSide.polygonOffsetFactor=-1.0
+    //   materialBackSide.polygonOffsetUnits =10000.0;
+    //   materialFrontSide.polygonOffset=true;
+    //   materialFrontSide.polygonOffsetFactor=-1.0
+    //   materialFrontSide.polygonOffsetUnits =10000.0;
+    //   console.log("XXXXXXXXXXXXXXXXXXXYYYYYYYYYYYYYYYYYYYY")
+    // }
+   
     n.material = materialFirstPass;
+    
     let mesh2 = n.clone();
     n.parent.add(mesh2);
     mesh2.material = materialBackSide;
