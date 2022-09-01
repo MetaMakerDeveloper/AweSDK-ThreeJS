@@ -41,10 +41,11 @@ fragmentShader: [ '#define USE_UV', '#define SUBSURFACE', meshphong_frag_head, '
 
 export function resetPolygonOffset(model,camera)
 {
+  // return;
   model.traverse((n) => {
     if (n.material != null ){
       if(n.material.name.indexOf("Hair") >= 0) {
-      } else if (n.material.name.indexOf("DiffNormalPacked") >= 0) {
+      } else if (n.material.name.indexOf("DiffNormalPacked") >= 0||n.material.name.indexOf("Custom/Diff") >= 0) {
       }else if (n.material.name.indexOf("head_sss") >= 0||n.material.name.indexOf("body_sss") >= 0 ){
       } else if(n.material.side==THREE.DoubleSide){
         console.log("XXXXXXXXXXXXXXXXXXXXXXX"+n.name);
@@ -68,9 +69,15 @@ export function resetMaterial(model) {
       if(n.material.name.indexOf("Hair") >= 0) {
       hairs.push(n);
       } else if (n.material.name.indexOf("DiffNormalPacked") >= 0||n.material.name.indexOf("Custom/Diff") >= 0) {
-       n.material.depthWrite = true;
-       n.material.roughness=1;
-       //hairs.push(n);
+      // n.material.depthWrite = true;
+      // n.material.roughness=1;
+      // hairs.push(n);
+       const m = new THREE.MeshBasicMaterial({
+       side: THREE.DoubleSide,
+      });
+      m.map=n.material.map;
+      m.name= n.material.name+"_resetMaterial_hat"
+      n.material=m;
       }else{
       // n.material.roughness=0.8;
       }
