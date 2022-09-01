@@ -55,6 +55,11 @@ function parseGLTFModel(buffer) {
     loader.parse(buffer, "", gltf => {
       const model = gltf.scene;
       setModelInfo(model);
+      gltf.scene.traverse(child => {
+        if (child.type == 'SkinnedMesh') {
+          child.frustumCulled = false;
+        }
+      });
       resolve(model);
     }, e => {
       reject(e);
