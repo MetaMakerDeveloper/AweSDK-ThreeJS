@@ -94,7 +94,12 @@ window.onload = async () => {
   window.addEventListener("resize", onResize);
 
   // 创建renderer
-  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    alpha: true,
+    logarithmicDepthBuffer: false,
+  });
+  //renderer = null;
   canvasRect.width = window.innerWidth;
   canvasRect.height = window.innerHeight;
   renderer.setPixelRatio(window.devicePixelRatio);
@@ -119,6 +124,8 @@ window.onload = async () => {
   // 创建Idol
 
   await replaceIdol(params.url);
+  MMFT.core.resetPolygonOffset(idol, camera);
+
   mixer = new THREE.AnimationMixer(idol);
   scene.add(idol);
   addDefaultLights(scene);
@@ -324,6 +331,7 @@ async function replaceIdol(opts: string | Uint8Array) {
     idol.clear();
     idol = null;
   }
+
   if (typeof opts == "string" && opts.endsWith(".gltf")) {
     idol = await MMFT.core.loadGLTFModel(opts);
   } else if (typeof opts == "string") {
@@ -334,6 +342,7 @@ async function replaceIdol(opts: string | Uint8Array) {
   } else {
     idol = await MMFT.core.parseGLTFModel(opts.buffer);
   }
+  MMFT.core.resetPolygonOffset(idol, camera);
   mixer = new THREE.AnimationMixer(idol);
   scene.add(idol);
 }
