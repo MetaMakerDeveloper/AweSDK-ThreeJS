@@ -25,28 +25,27 @@ const SubsurfaceScatteringShader = {
         value: _SSSLUTTexture,
       },
       _CurveFactor: {
-        value: 0.9,
+        value: 0.8,
+      },
+      _SSSFactor: {
+        value: 0.3,
       },
     },
   ]),
   vertexShader: ["#define USE_UV", THREE.ShaderChunk["meshphong_vert"]].join("\n"),
   fragmentShader: [
-    "#define USE_UV",
-    "#define SUBSURFACE",
     meshphong_frag_head,
     "uniform sampler2D _SSSLUT;",
     "uniform float _CurveFactor;",
-    "void RE_Direct_Scattering(const in IncidentLight directLight, const in vec2 uv, const in GeometricContext geometry, inout ReflectedLight reflectedLight) {",
-    //'	vec3 thickness = thicknessColor * texture2D(thicknessMap, uv).r;',
-    //'	vec3 scatteringHalf = normalize(directLight.direction + (geometry.normal * thicknessDistortion));',
-    //'	float scatteringDot = pow(saturate(dot(geometry.viewDir, -scatteringHalf)), thicknessPower) * thicknessScale;',
-    //'	vec3 scatteringIllu = (scatteringDot + thicknessAmbient) * thickness;',
-    //'	reflectedLight.directDiffuse += scatteringIllu * thicknessAttenuation * directLight.color;',
-
+    "uniform float _SSSFactor;",
+    "void RE_Direct_Scattering(const in IncidentLight directLight, const in vec2 uv, const in GeometricContext geometry,  const in PhysicalMaterial material,inout ReflectedLight reflectedLight) {",
+    "float dotNL = saturate( dot( geometry.normal, directLight.direction ) );",
+    "vec3 irradiance = dotNL * directLight.color;",
+    "reflectedLight.directDiffuse -= irradiance * BRDF_Lambert( material.diffuseColor )*_SSSFactor;",
     "	float NoL = dot(geometry.normal, directLight.direction);",
-    "	vec4 diffuse =texture2D(_SSSLUT,vec2(NoL * 0.5 + 0.5,_CurveFactor))*0.03;",
-    "	reflectedLight.directDiffuse += diffuse.xyz * directLight.color;",
-
+    "	vec4 diffuse =texture2D(_SSSLUT,vec2(NoL * 0.5 + 0.5,_CurveFactor));",
+    "	reflectedLight.directDiffuse += diffuse.xyz * directLight.color* BRDF_Lambert( material.diffuseColor )*_SSSFactor;",
+    "	//reflectedLight.directDiffuse += diffuse.xyz * directLight.color*  material.diffuseColor *_SSSFactor*0.3;",
     "}",
     meshphong_frag_body.replace(
       "#include <lights_fragment_begin>",
@@ -55,32 +54,34 @@ const SubsurfaceScatteringShader = {
         "RE_Direct( directLight, geometry, material, reflectedLight );",
         [
           "RE_Direct( directLight, geometry, material, reflectedLight );",
-          "#if defined( SUBSURFACE ) && defined( USE_UV )",
-          " RE_Direct_Scattering(directLight, vUv, geometry, reflectedLight);",
-          "#endif",
+          "RE_Direct_Scattering(directLight, vUv, geometry, material,reflectedLight);",
         ].join("\n")
       )
     ),
   ].join("\n"),
 };
 
-export function resetPolygonOffset(model, camera) {
-  // return;
+
+
+
+
+export function resetPolygonOffset(model,camera)
+{
+  //return;
   model.traverse((n) => {
-    if (n.material != null) {
-      if (n.material.name.indexOf("Hair") >= 0) {
-      } else if (
-        n.material.name.indexOf("DiffNormalPacked") >= 0 ||
-        n.material.name.indexOf("Custom/Diff") >= 0
-      ) {
-      } else if (
-        n.material.name.indexOf("head_sss") >= 0 ||
-        n.material.name.indexOf("body_sss") >= 0
-      ) {
-      } else if (n.material.side == THREE.DoubleSide) {
-        console.log("XXXXXXXXXXXXXXXXXXXXXXX" + n.name);
-        var m = n.material.clone();
-        m.polygonOffset = true;
+    if (n.material != null ){
+      if(n.material.name.indexOf("Hair") >= 0) {
+      } else if (n.material.name.indexOf("DiffNormalPacked") >= 0||n.material.name.indexOf("Custom/Diff") >= 0) {
+      }else if (n.material.name.indexOf("head_sss") >= 0||n.material.name.indexOf("body_sss") >= 0 ){
+      } else if (n.material.name.indexOf("eye") >= 0||n.material.name.indexOf("Eye") >= 0 ||n.material.name.indexOf("yachi") >= 0||n.material.name.indexOf("Eye") >= 0 ){
+      }
+      else
+      {
+        console.log("XXXXXXXXXXXXXXXXXXXXXXX"+n.name+"  "+n.material.name);
+
+        var m=n.material.clone();
+        m.polygonOffset=true;
+
         m.polygonOffsetFactor = -1.0;
         var p = model.position.clone().sub(camera.position);
         p.y = 0;
@@ -113,7 +114,7 @@ export function resetMaterial(model) {
       } else {
         // n.material.roughness=0.8;
       }
-      resetSSSMaterial(n);
+     resetSSSMaterial(n);
     }
   });
 
@@ -146,34 +147,19 @@ export function resetMaterial(model) {
     materialFirstPass.map = n.material.map;
     materialBackSide.map = n.material.map;
     materialFrontSide.map = n.material.map;
-    materialFirstPass.name = n.material.name + "materialFirstPass";
-    materialBackSide.name = n.material.name + "materialBackSide";
-    materialFrontSide.name = n.material.name + "materialFrontSide";
-
-    // if(n.material.name.indexOf("Hair") < 0) {
-    //   materialFirstPass.polygonOffset=true;
-    //   materialFirstPass.polygonOffsetFactor=-1.0
-    //   materialFirstPass.polygonOffsetUnits =-10000.0;
-    //   materialBackSide.polygonOffset=true;
-    //   materialBackSide.polygonOffsetFactor=-1.0
-    //   materialBackSide.polygonOffsetUnits =10000.0;
-    //   materialFrontSide.polygonOffset=true;
-    //   materialFrontSide.polygonOffsetFactor=-1.0
-    //   materialFrontSide.polygonOffsetUnits =10000.0;
-    //   console.log("XXXXXXXXXXXXXXXXXXXYYYYYYYYYYYYYYYYYYYY")
-    // }
-
-    n.material = materialFirstPass;
-
+    materialFirstPass.name=n.material.name+"materialFirstPass";
+    materialBackSide.name=n.material.name+"materialBackSide";
+    materialFrontSide.name=n.material.name+"materialFrontSide";
+    let mesh = n;
     let mesh2 = n.clone();
     n.parent.add(mesh2);
+    let mesh3 = n.clone();
+    n.parent.add(mesh3);
+    mesh.material = materialFirstPass;
     mesh2.material = materialBackSide;
     mesh2.renderOrder = n.renderOrder + 1;
-
-    mesh2 = n.clone();
-    n.parent.add(mesh2);
-    mesh2.material = materialFrontSide;
-    mesh2.renderOrder = n.renderOrder + 2;
+    mesh3.material = materialFrontSide;
+    mesh3.renderOrder = n.renderOrder + 2;
   });
 }
 function resetSSSMaterial(n) {
