@@ -40,6 +40,7 @@ MetaMakerDeveloper 发布的代码或数字资产（数字人、服装、动作�
 
 ## 更新日志
 
-2022-09-02: 处理部分动作补间，导致模型的踢腿动作，core中增加resetPolyonOffset处理人物模型穿模问题
+2022-09-02: 处理部分动作补间，导致模型的踢腿动作，core中增加resetPolyonOffset处理人物模型穿模问题 ; 
+            FIX:鉴权生成code错误BUGFIX
 
 2022-8-31: 替换非鉴权的 TTS 接口，请调用者运行例子时，自行替换 appKey,appSecret。替换例子中的人物模型

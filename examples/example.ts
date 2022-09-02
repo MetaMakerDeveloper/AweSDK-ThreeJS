@@ -5,7 +5,8 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Stats from "three/examples/jsm/libs/stats.module.js";
 import * as fflate from "fflate";
 import CryptoJS from "crypto-js";
-import { encode } from "js-base64";
+
+import qs from "qs";
 let renderer;
 let scene;
 let camera: THREE.PerspectiveCamera;
@@ -37,8 +38,8 @@ const params = {
   audioURL: "",
   teethAnimURL: "",
   emoAnimURL: "",
-  appKey: "",
-  appSecret: "",
+  appKey: "b3230d04a8b34becbe76381cb515a2a9",
+  appSecret: "8bda845dfc584b01a8e906628e12dbd0",
   发送TTS请求: async function () {
     // todo
     const [audio, teeth, emo] = await fetchTTSToAnim(params.ttsText);
@@ -263,7 +264,7 @@ function addGui() {
     camera.lookAt(lookTarget.x, lookTarget.y, lookTarget.z);
   });
 
-  // const idolGui = gui.addFolder("替换人物");
+  const idolGui = gui.addFolder("替换人物");
 
   // idolGui
   //   .add(params, "name", {
@@ -273,7 +274,7 @@ function addGui() {
   //   })
   //   .onChange(replaceIdol);
 
-  // idolGui.add(params, "自定义模型地址").onChange(replaceIdol);
+  idolGui.add(params, "自定义模型地址").onChange(replaceIdol);
 
   const animateGui = gui.addFolder("Pose Animate");
   animateGui.add(params, "fadeIn", 0, 10, 0.01);
@@ -406,13 +407,14 @@ async function fetchTTSToAnim(text: string) {
   let response: any = await fetch("//open.metamaker.cn/api/openmm/v1/text_to_anim", {
     method: "post",
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
       Authorization: ttsAuth,
     },
-    body: JSON.stringify({
+    body: qs.stringify({
       text: text,
       tts_args: JSON.stringify(tts),
       audio_type: "wav",
+      storage_type: "cloud",
     }),
     mode: "cors",
   });
@@ -537,7 +539,8 @@ function makeSignCode() {
 
   const appKey = params.appKey;
   const appSecret = params.appSecret;
-  const timestamp = Math.floor(new Date().getTime() / 1000);
+  const timestamp = new Date().getTime() / 1000;
+  console.log(`timestamp:`, timestamp);
   const message = `${timestamp}:${appKey}`;
   const wordsArray = CryptoJS.HmacSHA256(message, appSecret);
   const hashSuffix = convertWordArrayToUint8Array(wordsArray);
@@ -546,7 +549,7 @@ function makeSignCode() {
   totalArray.set(hashPrefix);
   totalArray.set(hashSuffix, hashPrefix.length);
 
-  const base64 = encode(String.fromCharCode.apply(null, totalArray));
+  const base64 = btoa(String.fromCharCode.apply(null, totalArray));
   ttsAuth = `AW ${appKey}:${base64}`;
 }
 
