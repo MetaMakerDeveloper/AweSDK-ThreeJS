@@ -27,26 +27,25 @@ const SubsurfaceScatteringShader = {
       _CurveFactor: {
         value: 0.9,
       },
+      _SSSFactor: {
+        value: 0.4,
+      },
     },
   ]),
   vertexShader: ["#define USE_UV", THREE.ShaderChunk["meshphong_vert"]].join("\n"),
   fragmentShader: [
-    "#define USE_UV",
-    "#define SUBSURFACE",
     meshphong_frag_head,
     "uniform sampler2D _SSSLUT;",
     "uniform float _CurveFactor;",
-    "void RE_Direct_Scattering(const in IncidentLight directLight, const in vec2 uv, const in GeometricContext geometry, inout ReflectedLight reflectedLight) {",
-    //'	vec3 thickness = thicknessColor * texture2D(thicknessMap, uv).r;',
-    //'	vec3 scatteringHalf = normalize(directLight.direction + (geometry.normal * thicknessDistortion));',
-    //'	float scatteringDot = pow(saturate(dot(geometry.viewDir, -scatteringHalf)), thicknessPower) * thicknessScale;',
-    //'	vec3 scatteringIllu = (scatteringDot + thicknessAmbient) * thickness;',
-    //'	reflectedLight.directDiffuse += scatteringIllu * thicknessAttenuation * directLight.color;',
-
+    "uniform float _SSSFactor;",
+    "void RE_Direct_Scattering(const in IncidentLight directLight, const in vec2 uv, const in GeometricContext geometry,  const in PhysicalMaterial material,inout ReflectedLight reflectedLight) {",
+    "float dotNL = saturate( dot( geometry.normal, directLight.direction ) );",
+    "vec3 irradiance = dotNL * directLight.color;",
+    "reflectedLight.directDiffuse -= irradiance * BRDF_Lambert( material.diffuseColor )*_SSSFactor;",
     "	float NoL = dot(geometry.normal, directLight.direction);",
-    "	vec4 diffuse =texture2D(_SSSLUT,vec2(NoL * 0.5 + 0.5,_CurveFactor))*0.03;",
-    "	reflectedLight.directDiffuse += diffuse.xyz * directLight.color;",
-
+    "	vec4 diffuse =texture2D(_SSSLUT,vec2(NoL * 0.5 + 0.5,_CurveFactor));",
+    "	reflectedLight.directDiffuse += diffuse.xyz * directLight.color* BRDF_Lambert( material.diffuseColor )*_SSSFactor;",
+    "	//reflectedLight.directDiffuse += diffuse.xyz * directLight.color*  material.diffuseColor *_SSSFactor*0.3;",
     "}",
     meshphong_frag_body.replace(
       "#include <lights_fragment_begin>",
@@ -55,9 +54,7 @@ const SubsurfaceScatteringShader = {
         "RE_Direct( directLight, geometry, material, reflectedLight );",
         [
           "RE_Direct( directLight, geometry, material, reflectedLight );",
-          "#if defined( SUBSURFACE ) && defined( USE_UV )",
-          " RE_Direct_Scattering(directLight, vUv, geometry, reflectedLight);",
-          "#endif",
+          "RE_Direct_Scattering(directLight, vUv, geometry, material,reflectedLight);",
         ].join("\n")
       )
     ),
@@ -117,7 +114,7 @@ export function resetMaterial(model) {
       } else {
         // n.material.roughness=0.8;
       }
-      resetSSSMaterial(n);
+     resetSSSMaterial(n);
     }
   });
 
