@@ -539,7 +539,7 @@ function makeSignCode() {
 
   const appKey = params.appKey;
   const appSecret = params.appSecret;
-  const timestamp = new Date().getTime() / 1000;
+  const timestamp = Math.floor(new Date().getTime() / 1000);
   console.log(`timestamp:`, timestamp);
   const message = `${timestamp}:${appKey}`;
   const wordsArray = CryptoJS.HmacSHA256(message, appSecret);
@@ -548,8 +548,9 @@ function makeSignCode() {
   const totalArray = new Uint8Array(hashPrefix.length + hashSuffix.length);
   totalArray.set(hashPrefix);
   totalArray.set(hashSuffix, hashPrefix.length);
-
-  const base64 = btoa(String.fromCharCode.apply(null, totalArray));
+  const tempstr = String.fromCharCode.apply(null, totalArray);
+  console.log(`temp str`, tempstr);
+  const base64 = btoa(tempstr);
   ttsAuth = `AW ${appKey}:${base64}`;
 }
 
