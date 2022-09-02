@@ -30,6 +30,7 @@ const params = {
   url: "./f9d25cc22be065191dca0f2ac7b248fd.zip",
   自定义模型地址: "",
   pose: "",
+  poseEmo: "",
   fadeIn: 0,
   fadeOut: 0,
   ttsText: "",
@@ -280,6 +281,9 @@ function addGui() {
   animateGui.add(params, "pose", animations).onChange(handleChangePose);
   animateGui.add(params, "pose").onChange(handleChangePose);
 
+  const emoGui = gui.addFolder("Emo Animate");
+  emoGui.add(params, "poseEmo").onChange(handleChangeEmo);
+
   const ttsGui = gui.addFolder("tts");
   ttsGui.add(params, "appKey").onChange(() => {
     makeSignCode();
@@ -363,6 +367,13 @@ async function handleChangePose(value: string) {
   if (params.fadeIn) {
     action.fadeIn(params.fadeIn);
   }
+  action.play();
+}
+
+async function handleChangeEmo(value: string) {
+  const animateJSON = await MMFT.core.loadAnimationData(value);
+  const clip = MMFT.core.Convert(animateJSON, true);
+  const action = mixer.clipAction(clip);
   action.play();
 }
 
