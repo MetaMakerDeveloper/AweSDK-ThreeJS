@@ -5,7 +5,8 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Stats from "three/examples/jsm/libs/stats.module.js";
 import * as fflate from "fflate";
 import CryptoJS from "crypto-js";
-import { encode } from "js-base64";
+
+import qs from "qs";
 let renderer;
 let scene;
 let camera: THREE.PerspectiveCamera;
@@ -30,14 +31,15 @@ const params = {
   url: "./f9d25cc22be065191dca0f2ac7b248fd.zip",
   自定义模型地址: "",
   pose: "",
+  poseEmo: "",
   fadeIn: 0,
   fadeOut: 0,
   ttsText: "",
   audioURL: "",
   teethAnimURL: "",
   emoAnimURL: "",
-  appKey: "",
-  appSecret: "",
+  appKey: "b3230d04a8b34becbe76381cb515a2a9",
+  appSecret: "8bda845dfc584b01a8e906628e12dbd0",
   发送TTS请求: async function () {
     // todo
     const [audio, teeth, emo] = await fetchTTSToAnim(params.ttsText);
@@ -93,7 +95,12 @@ window.onload = async () => {
   window.addEventListener("resize", onResize);
 
   // 创建renderer
-  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    alpha: true,
+    logarithmicDepthBuffer: false,
+  });
+  //renderer = null;
   canvasRect.width = window.innerWidth;
   canvasRect.height = window.innerHeight;
   renderer.setPixelRatio(window.devicePixelRatio);
@@ -118,6 +125,8 @@ window.onload = async () => {
   // 创建Idol
 
   await replaceIdol(params.url);
+  MMFT.core.resetPolygonOffset(idol, camera);
+
   mixer = new THREE.AnimationMixer(idol);
   scene.add(idol);
   addDefaultLights(scene);
@@ -255,7 +264,7 @@ function addGui() {
     camera.lookAt(lookTarget.x, lookTarget.y, lookTarget.z);
   });
 
-  // const idolGui = gui.addFolder("替换人物");
+  const idolGui = gui.addFolder("替换人物");
 
   // idolGui
   //   .add(params, "name", {
@@ -265,13 +274,16 @@ function addGui() {
   //   })
   //   .onChange(replaceIdol);
 
-  // idolGui.add(params, "自定义模型地址").onChange(replaceIdol);
+  idolGui.add(params, "自定义模型地址").onChange(replaceIdol);
 
   const animateGui = gui.addFolder("Pose Animate");
   animateGui.add(params, "fadeIn", 0, 10, 0.01);
   animateGui.add(params, "fadeOut", 0, 10, 0.01);
   animateGui.add(params, "pose", animations).onChange(handleChangePose);
   animateGui.add(params, "pose").onChange(handleChangePose);
+
+  const emoGui = gui.addFolder("Emo Animate");
+  emoGui.add(params, "poseEmo").onChange(handleChangeEmo);
 
   const ttsGui = gui.addFolder("tts");
   ttsGui.add(params, "appKey").onChange(() => {
@@ -320,6 +332,7 @@ async function replaceIdol(opts: string | Uint8Array) {
     idol.clear();
     idol = null;
   }
+
   if (typeof opts == "string" && opts.endsWith(".gltf")) {
     idol = await MMFT.core.loadGLTFModel(opts);
   } else if (typeof opts == "string") {
@@ -330,6 +343,7 @@ async function replaceIdol(opts: string | Uint8Array) {
   } else {
     idol = await MMFT.core.parseGLTFModel(opts.buffer);
   }
+  MMFT.core.resetPolygonOffset(idol, camera);
   mixer = new THREE.AnimationMixer(idol);
   scene.add(idol);
 }
@@ -354,6 +368,13 @@ async function handleChangePose(value: string) {
   if (params.fadeIn) {
     action.fadeIn(params.fadeIn);
   }
+  action.play();
+}
+
+async function handleChangeEmo(value: string) {
+  const animateJSON = await MMFT.core.loadAnimationData(value);
+  const clip = MMFT.core.Convert(animateJSON, true);
+  const action = mixer.clipAction(clip);
   action.play();
 }
 
@@ -386,13 +407,14 @@ async function fetchTTSToAnim(text: string) {
   let response: any = await fetch("//open.metamaker.cn/api/openmm/v1/text_to_anim", {
     method: "post",
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
       Authorization: ttsAuth,
     },
-    body: JSON.stringify({
+    body: qs.stringify({
       text: text,
       tts_args: JSON.stringify(tts),
       audio_type: "wav",
+      storage_type: "cloud",
     }),
     mode: "cors",
   });
@@ -517,7 +539,8 @@ function makeSignCode() {
 
   const appKey = params.appKey;
   const appSecret = params.appSecret;
-  const timestamp = Math.floor(new Date().getTime() / 1000);
+  const timestamp = new Date().getTime() / 1000;
+  console.log(`timestamp:`, timestamp);
   const message = `${timestamp}:${appKey}`;
   const wordsArray = CryptoJS.HmacSHA256(message, appSecret);
   const hashSuffix = convertWordArrayToUint8Array(wordsArray);
@@ -526,7 +549,7 @@ function makeSignCode() {
   totalArray.set(hashPrefix);
   totalArray.set(hashSuffix, hashPrefix.length);
 
-  const base64 = encode(String.fromCharCode.apply(null, totalArray));
+  const base64 = btoa(String.fromCharCode.apply(null, totalArray));
   ttsAuth = `AW ${appKey}:${base64}`;
 }
 

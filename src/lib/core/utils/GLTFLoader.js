@@ -64,7 +64,7 @@ import {
   VectorKeyframeTrack,
   sRGBEncoding,
 } from "three";
-console.log(`loader`, Loader);
+
 class GLTFLoader extends Loader {
   constructor(manager) {
     super(manager);
