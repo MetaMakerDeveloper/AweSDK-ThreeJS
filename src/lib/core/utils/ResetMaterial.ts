@@ -41,14 +41,18 @@ fragmentShader: [ '#define USE_UV', '#define SUBSURFACE', meshphong_frag_head, '
 
 export function resetPolygonOffset(model,camera)
 {
-  // return;
+  //return;
   model.traverse((n) => {
     if (n.material != null ){
       if(n.material.name.indexOf("Hair") >= 0) {
       } else if (n.material.name.indexOf("DiffNormalPacked") >= 0||n.material.name.indexOf("Custom/Diff") >= 0) {
       }else if (n.material.name.indexOf("head_sss") >= 0||n.material.name.indexOf("body_sss") >= 0 ){
-      } else if(n.material.side==THREE.DoubleSide){
-        console.log("XXXXXXXXXXXXXXXXXXXXXXX"+n.name);
+      } else if (n.material.name.indexOf("eye") >= 0||n.material.name.indexOf("Eye") >= 0 ||n.material.name.indexOf("yachi") >= 0||n.material.name.indexOf("Eye") >= 0 ){
+      }
+      else
+      {
+        console.log("XXXXXXXXXXXXXXXXXXXXXXX"+n.name+"  "+n.material.name);
+
         var m=n.material.clone();
         m.polygonOffset=true;
         m.polygonOffsetFactor = -1.0;
@@ -120,30 +124,27 @@ export function resetMaterial(model) {
     materialBackSide.name=n.material.name+"materialBackSide";
     materialFrontSide.name=n.material.name+"materialFrontSide";
     
-    // if(n.material.name.indexOf("Hair") < 0) {
-    //   materialFirstPass.polygonOffset=true;
-    //   materialFirstPass.polygonOffsetFactor=-1.0
-    //   materialFirstPass.polygonOffsetUnits =-10000.0;
-    //   materialBackSide.polygonOffset=true;
-    //   materialBackSide.polygonOffsetFactor=-1.0
-    //   materialBackSide.polygonOffsetUnits =10000.0;
-    //   materialFrontSide.polygonOffset=true;
-    //   materialFrontSide.polygonOffsetFactor=-1.0
-    //   materialFrontSide.polygonOffsetUnits =10000.0;
-    //   console.log("XXXXXXXXXXXXXXXXXXXYYYYYYYYYYYYYYYYYYYY")
-    // }
-   
-    n.material = materialFirstPass;
-    
+
+    let mesh = n;
     let mesh2 = n.clone();
     n.parent.add(mesh2);
+    let mesh3 = n.clone();
+    n.parent.add(mesh3);
+
+    
+
+
+    mesh.material = materialFirstPass;
+    
     mesh2.material = materialBackSide;
     mesh2.renderOrder = n.renderOrder + 1;
+   
+    mesh3.material = materialFrontSide;
+    mesh3.renderOrder = n.renderOrder + 2;
 
-    mesh2 = n.clone();
-    n.parent.add(mesh2);
-    mesh2.material = materialFrontSide;
-    mesh2.renderOrder = n.renderOrder + 2;
+
+
+
   });
 }
 function resetSSSMaterial(n) 
