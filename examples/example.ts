@@ -38,8 +38,8 @@ const params = {
   audioURL: "",
   teethAnimURL: "",
   emoAnimURL: "",
-  appKey: "b3230d04a8b34becbe76381cb515a2a9",
-  appSecret: "8bda845dfc584b01a8e906628e12dbd0",
+  appKey: "",
+  appSecret: "",
   发送TTS请求: async function () {
     // todo
     const [audio, teeth, emo] = await fetchTTSToAnim(params.ttsText);
