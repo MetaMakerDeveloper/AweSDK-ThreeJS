@@ -30,6 +30,14 @@ if (process.env.VUE_BUILD_APP == "mlib") {
         });
       });
 
+      config.module.rules.forEach((rule) => {
+        if (rule.__ruleNames[0] == "images") {
+          rule.type = "asset/inline";
+          rule.parser = { dataUrlCondition: { maxSize: 1024 * 412 } };
+          delete rule.generator;
+        }
+      });
+
       config.module.rules.push({
         test: wasmExtensionRegExp,
         include: path.resolve(__dirname, "src"),

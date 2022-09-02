@@ -10,6 +10,7 @@ module.exports = defineConfig({
     config.entry = "./src/lib/index.ts";
     const wasmExtensionRegExp = /\.wasm$/;
     config.devtool = false;
+
     config.resolve.extensions.push(".wasm");
     config.module.rules.forEach((rule) => {
       (rule.oneOf || []).forEach((oneOf) => {
@@ -17,6 +18,13 @@ module.exports = defineConfig({
           oneOf.exclude.push(wasmExtensionRegExp);
         }
       });
+    });
+    config.module.rules.forEach((rule) => {
+      if (rule.__ruleNames[0] == "images") {
+        rule.type = "asset/inline";
+        rule.parser = { dataUrlCondition: { maxSize: 1024 * 412 } };
+        delete rule.generator;
+      }
     });
     config.module.rules.push({
       test: wasmExtensionRegExp,
