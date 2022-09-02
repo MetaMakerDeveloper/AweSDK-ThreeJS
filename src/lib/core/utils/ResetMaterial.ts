@@ -25,10 +25,10 @@ const SubsurfaceScatteringShader = {
         value: _SSSLUTTexture,
       },
       _CurveFactor: {
-        value: 0.9,
+        value: 0.8,
       },
       _SSSFactor: {
-        value: 0.4,
+        value: 0.3,
       },
     },
   ]),
