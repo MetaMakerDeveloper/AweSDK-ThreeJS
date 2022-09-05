@@ -8,6 +8,7 @@ module.exports = defineConfig({
   outputDir: "./libs",
   configureWebpack: (config) => {
     config.entry = "./src/lib/index.ts";
+    config.mode = "production";
     const wasmExtensionRegExp = /\.wasm$/;
     config.devtool = false;
 
@@ -48,6 +49,7 @@ module.exports = defineConfig({
         commonjs: "three",
       },
     };
+    config.optimization.minimizer[0].options.minimizer.options.compress.drop_console = true;
     delete config.optimization.splitChunks;
     config.plugins = config.plugins.filter((plugin) => {
       return (
