@@ -45,7 +45,6 @@ const SubsurfaceScatteringShader = {
     "	float NoL = dot(geometry.normal, directLight.direction);",
     "	vec4 diffuse =texture2D(_SSSLUT,vec2(NoL * 0.5 + 0.5,_CurveFactor));",
     "	reflectedLight.directDiffuse += diffuse.xyz * directLight.color* BRDF_Lambert( material.diffuseColor )*_SSSFactor;",
-    "	//reflectedLight.directDiffuse += diffuse.xyz * directLight.color*  material.diffuseColor *_SSSFactor*0.3;",
     "}",
     meshphong_frag_body.replace(
       "#include <lights_fragment_begin>",
@@ -94,17 +93,19 @@ export function resetPolygonOffset(model,camera)
 }
 export function resetMaterial(model) {
   const hairs: any[] = [];
+  const s=1.04;
   model.traverse((n) => {
     if (n.material != null) {
       if (n.material.name.indexOf("Hair") >= 0) {
         hairs.push(n);
+        n.scale.x=n.scale.x*s;
+        n.scale.z=n.scale.z*s;
       } else if (
         n.material.name.indexOf("DiffNormalPacked") >= 0 ||
         n.material.name.indexOf("Custom/Diff") >= 0
       ) {
-        // n.material.depthWrite = true;
-        // n.material.roughness=1;
-        // hairs.push(n);
+        n.scale.x=n.scale.x*s;
+        n.scale.z=n.scale.z*s;
         const m = new THREE.MeshBasicMaterial({
           side: THREE.DoubleSide,
         });
