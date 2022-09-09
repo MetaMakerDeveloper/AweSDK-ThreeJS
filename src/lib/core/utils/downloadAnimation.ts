@@ -59,7 +59,10 @@ export async function downloadAnimation(animationName, geometryName) {
   return ac;
 }
 
-export const loadAnimationData = async function (animateName: string): Promise<object> {
+export const loadAnimationData = async function (
+  animateName: string,
+  baseUrl = "//img.metaworks.cn/webgl/app/"
+): Promise<object> {
   let url: string;
   if (!animateName) {
     return Promise.reject("没有对应的动画名称");
@@ -67,7 +70,7 @@ export const loadAnimationData = async function (animateName: string): Promise<o
   if (animateName.startsWith("http")) {
     url = animateName;
   } else {
-    url = `//img.metaworks.cn/webgl/app/${animateName}`;
+    url = `${baseUrl}/${animateName}`;
   }
 
   const result = (await downloadData(url, "arraybuffer")) as ArrayBuffer;
