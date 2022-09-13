@@ -40,6 +40,7 @@ const params = {
   emoAnimURL: "",
   appKey: "",
   appSecret: "",
+  loop: THREE.LoopRepeat,
   发送TTS请求: async function () {
     // todo
     const [audio, teeth, emo] = await fetchTTSToAnim(params.ttsText);
@@ -123,6 +124,9 @@ window.onload = async () => {
   controls.target.set(0, 1, 0);
   controls.update();
   // 创建Idol
+  controls.addEventListener("end", () => {
+    MMFT.core.resetPolygonOffset(idol, camera);
+  });
 
   await replaceIdol(params.url);
   MMFT.core.resetPolygonOffset(idol, camera);
@@ -281,6 +285,7 @@ function addGui() {
   animateGui.add(params, "fadeOut", 0, 10, 0.01);
   animateGui.add(params, "pose", animations).onChange(handleChangePose);
   animateGui.add(params, "pose").onChange(handleChangePose);
+  animateGui.add(params, "loop", { LoopOnce: THREE.LoopOnce, LoopRepeat: THREE.LoopRepeat });
 
   const emoGui = gui.addFolder("Emo Animate");
   emoGui.add(params, "poseEmo").onChange(handleChangeEmo);
@@ -368,6 +373,7 @@ async function handleChangePose(value: string) {
   if (params.fadeIn) {
     action.fadeIn(params.fadeIn);
   }
+  action.loop = params.loop;
   action.play();
 }
 
