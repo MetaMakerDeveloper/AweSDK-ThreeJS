@@ -18,6 +18,12 @@ yarn serve
 yarn build:lib
 ```
 
+## 前置
+
+1. 如果您不是使用 npm 进行开发，请先前往 [threejs git](https://github.com/mrdoob/three.js) 下载 build/three.min.js 引入到项目中，再加载 meta-maker-for-three。
+
+2. npm : npm install three
+
 ## 说明
 
 这是黑镜数字人结合 threejs 使用的一个例子。本例子提供了结合 threejs 中 2 个关键点，其余情况，直接使用 threejs 相关功能即可完成
