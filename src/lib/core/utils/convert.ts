@@ -1,4 +1,4 @@
-/* eslint-disable */ 
+/* eslint-disable */
 import * as THREE from "three";
 let bodyMorphTargetDictionary = {};
 let teethMorphTargetDictionary = {};
@@ -14,6 +14,14 @@ export function setTeethMorphTargetDictionary(name, map) {
   Tooth_downMeshName = name;
   console.log(teethMorphTargetDictionary);
 }
+
+/**
+ *
+ * @param { object } fp 动画文件json结构的描述
+ * @param {boolean} isEmotion 是否为表情类型的动画
+ * @returns { AnimationClip }
+ * @desc 通过将JSON结构的描述转化为 THREEJS 的AnimationClip
+ */
 export default function Convert(fp, isEmotion = false) {
   // console.log(fp);
   const kfs = new Array<THREE.KeyframeTrack>();
@@ -61,7 +69,7 @@ export default function Convert(fp, isEmotion = false) {
           var track = new THREE.KeyframeTrack(trackName, times, vs, THREE.InterpolateLinear);
         } else {
           var ws = arry[i + 3]["Keys"].map((k) => k["Value"]);
-          var vs2=[];
+          var vs2 = [];
           for (var j = 0; j < xs.length; j++) {
             var q = new THREE.Quaternion(xs[j], ys[j], zs[j], ws[j]);
             vs2[j * 4] = q.x;

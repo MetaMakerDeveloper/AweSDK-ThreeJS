@@ -59,6 +59,13 @@ export async function downloadAnimation(animationName, geometryName) {
   return ac;
 }
 
+/**
+ *
+ * @param animateName 动画名称
+ * @param baseUrl 地址前缀
+ * @returns {Promise<object>}
+ * 通过动画名称加载动画的描述，得到的是JSON结构的数据
+ */
 export const loadAnimationData = async function (
   animateName: string,
   baseUrl = "//img.metaworks.cn/webgl/app/"
