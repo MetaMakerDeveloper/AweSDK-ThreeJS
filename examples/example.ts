@@ -46,6 +46,9 @@ const params = {
     const [audio, teeth, emo] = await fetchTTSToAnim(params.ttsText);
     handleTTS(audio, teeth, emo);
   },
+  /**
+   * 加载本地的数字人Zip包
+   */
   加载GLBZip包: async function () {
     // todo
     const input = document.createElement("input");
@@ -101,7 +104,7 @@ window.onload = async () => {
     alpha: true,
     logarithmicDepthBuffer: false,
   });
-  //renderer = null;
+
   canvasRect.width = window.innerWidth;
   canvasRect.height = window.innerHeight;
   renderer.setPixelRatio(window.devicePixelRatio);
@@ -161,7 +164,11 @@ window.onload = async () => {
   addGui();
 };
 
-// 创建一系列的灯光
+/**
+ *
+ * @param scene
+ * 创建场景的灯光，根据实际需求，创建合适灯光
+ */
 function addDefaultLights(scene: THREE.Scene) {
   const dirLight = new THREE.DirectionalLight();
   dirLight.color = new THREE.Color(0xffffff);
@@ -207,6 +214,9 @@ function addDefaultLights(scene: THREE.Scene) {
   scene.add(spot.target);
 }
 
+/**
+ * @desc 添加右侧的编辑窗体
+ */
 function addGui() {
   gui = new GUI();
   const humanGui = gui.addFolder("Meta Human");
@@ -270,14 +280,6 @@ function addGui() {
 
   const idolGui = gui.addFolder("替换人物");
 
-  // idolGui
-  //   .add(params, "name", {
-  //     黑镜官网小静: "http://timg.metaworks.cn/threejs_res/26720-92175-1660744961/character.gltf",
-  //     测试大黑: "http://timg.metaworks.cn/threejs_res/26720-92185-1661151875/character.gltf",
-  //     "小静(职业装)": "http://timg.metaworks.cn/threejs_res/26720-92184-1661151830/character.gltf",
-  //   })
-  //   .onChange(replaceIdol);
-
   idolGui.add(params, "自定义模型地址").onChange(replaceIdol);
 
   const animateGui = gui.addFolder("Pose Animate");
@@ -331,6 +333,14 @@ function addGui() {
   zipLoaderGui.add(params, "加载GLBZip包");
 }
 
+/**
+ *
+ * @param opts
+ * @desc
+ * 接受模型的地址：
+ * 用户通过数字人平台下载的数字人通常为一个zip包。将下载的zip包放到自己的开发服务器或者，OSS云服务器上，
+ * 可以直接使用地址进行加载。
+ */
 async function replaceIdol(opts: string | Uint8Array) {
   if (idol) {
     scene.remove(idol);
@@ -353,6 +363,11 @@ async function replaceIdol(opts: string | Uint8Array) {
   scene.add(idol);
 }
 
+/**
+ * @param value
+ * 用于gui直接修改当前播放的动画
+ * 通过动画名称加载的的动画资源，并进行播放
+ */
 async function handleChangePose(value: string) {
   const animateJSON = await MMFT.core.loadAnimationData(value);
   const clip = MMFT.core.Convert(animateJSON);
@@ -384,6 +399,13 @@ async function handleChangeEmo(value: string) {
   action.play();
 }
 
+/**
+ *
+ * @param audio
+ * @param teeth
+ * @param emo
+ * 播放threejs的相关动画与语音
+ */
 async function handleTTS(audio, teeth, emo) {
   const teethAction = mixer.clipAction(teeth);
   const emoAction = mixer.clipAction(emo);
@@ -404,6 +426,12 @@ async function handleTTS(audio, teeth, emo) {
   emoAction.play();
 }
 
+/**
+ *
+ * @param text
+ * @returns { [ THREE.Audio,THREE.AnimationAction,THREE.AnimationAction ] }
+ * 通过文字，以及tts的配置信息，获得用于threejs的口型动画与音频信息
+ */
 async function fetchTTSToAnim(text: string) {
   const tts = {
     voice_name: "zh-CN-XiaoxiaoNeural",
@@ -446,6 +474,12 @@ async function fetchTTSToAnim(text: string) {
   return [audio, data[1], data[2]];
 }
 
+/**
+ *
+ * @param url
+ * @returns {Promise<AudioBuffer>}
+ * @desc 通过url获得音频buffer
+ */
 async function loadAudio(url): Promise<AudioBuffer> {
   return new Promise((resolve, reject) => {
     const audioLoader = new THREE.AudioLoader();
@@ -455,6 +489,9 @@ async function loadAudio(url): Promise<AudioBuffer> {
   });
 }
 
+/**
+ * @desc 清除语音动画资源以及停止播放音频
+ */
 function clearTTSResource() {
   if (activeTTSResource.teeth) {
     activeTTSResource.teeth.paused = true;
@@ -472,7 +509,12 @@ function clearTTSResource() {
   }
 }
 
-// 解压zip包，提取glb文件
+/**
+ *
+ * @param file
+ * @returns
+ * @desc 解压zip包，提取glb文件
+ */
 function uncompressZipFile(file: File): Promise<Uint8Array> {
   return new Promise((resolve, reject) => {
     const fileReader = new FileReader();
@@ -503,6 +545,12 @@ function uncompressZipFile(file: File): Promise<Uint8Array> {
   });
 }
 
+/**
+ *
+ * @param buffer
+ * @returns
+ * @desc 解压zip文件获得数据
+ */
 function uncompress(buffer: ArrayBuffer): Promise<Uint8Array> {
   return new Promise((resolve) => {
     const unzipper = new fflate.Unzip();
@@ -524,6 +572,12 @@ function uncompress(buffer: ArrayBuffer): Promise<Uint8Array> {
   });
 }
 
+/**
+ * @desc
+ * 用于tts(语音播报)请求的鉴权代码，
+ * 在不使用tts的情况，可以不用理会该段代码。
+
+ */
 function makeSignCode() {
   const convertTextToUint8Array = (text: string) => {
     return Array.from(text).map((letter) => letter.charCodeAt(0));
@@ -562,6 +616,9 @@ function makeSignCode() {
 
 makeSignCode();
 
+/**
+ *  每10分钟更新一次鉴权
+ */
 setInterval(() => {
   makeSignCode();
 }, 60 * 1000 * 10);
