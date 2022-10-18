@@ -26,14 +26,19 @@ yarn build:lib
 
 ## 说明
 
-这是黑镜数字人结合 threejs 使用的一个例子。本例子提供了结合 threejs 中 2 个关键点，其余情况，直接使用 threejs 相关功能即可完成
+这是黑镜数字人结合 threejs 使用的一个例子。本例子提供了结合 threejs 中 3 个关键点，
 
 1. 数字人的加载
 2. 数字人物的语音与口型动画的播放
+3. TTS 语音鉴权代码
+
+其余情况，直接使用 threejs 相关功能完成
 
 ### 引入 metamaker-for-three
 
-1. metamaker-for-three 暂时没有上 npm，通过在 packagejson 中添加 github 的地址，并进行 yarn install
+1. 通过 npm
+
+metamaker-for-three 暂时没有上 npm，通过在 packagejson 中添加 github 的地址，并进行 yarn install
 
 ```
   "dependencies": {
@@ -41,7 +46,15 @@ yarn build:lib
   }
 ```
 
-2. 直接在[链接中](https://github.com/MetaMakerDeveloper/AweSDK-ThreeJS)的 libs 下载文件通过
+在无法连接 github 的情况下使用 gitee 连接
+
+```
+  "dependencies": {
+    "metamaker-for-three": "https://gitee.com/metamaker/AweSDK-ThreeJS.git#<版本号>"
+  }
+```
+
+2.  直接在[链接中](https://github.com/MetaMakerDeveloper/AweSDK-ThreeJS)的 libs 下载文件通过
 
 ```
 <script src="<您的js存放地址>/metamaker-for-three.js"></script>
