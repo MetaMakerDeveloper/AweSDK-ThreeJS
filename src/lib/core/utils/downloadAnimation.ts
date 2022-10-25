@@ -68,7 +68,7 @@ export async function downloadAnimation(animationName, geometryName) {
  */
 export const loadAnimationData = async function (
   animateName: string,
-  baseUrl = "//img.metaworks.cn/webgl/app/"
+  baseUrl = "//img.metaworks.cn/webgl/app"
 ): Promise<object> {
   let url: string;
   if (!animateName) {
