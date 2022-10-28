@@ -185,7 +185,7 @@ import MMFT from 'metamaker-for-three'
      return `AW ${appKey}:${base64}`;
    }
    ```
-    [更多语言鉴权参考]()
+    [更多语言鉴权参考](https://help.metamaker.cn/open/28ca/c4e6)
 ## 注意
 
 MetaMakerDeveloper 发布的代码或数字资产（数字人、服装、动作、表情等）以及试用数字人小镜、大黑都属于黑镜科技公司，如需商用，请添加以下二维码联系，谢谢！
