@@ -42,7 +42,7 @@ metamaker-for-three 暂时没有上 npm，通过在 packagejson 中添加 github
 
 ```
   "dependencies": {
-    "metamaker-for-three": "https://github.com/MetaMakerDeveloper/AweSDK-ThreeJS.git#<版本号>"
+    "metamaker-for-three": "https://github.com/MetaMakerDeveloper/AweSDK-ThreeJS.git#最新版本号"
   }
 ```
 
@@ -50,7 +50,7 @@ metamaker-for-three 暂时没有上 npm，通过在 packagejson 中添加 github
 
 ```
   "dependencies": {
-    "metamaker-for-three": "https://gitee.com/metamaker/AweSDK-ThreeJS.git#<版本号>"
+    "metamaker-for-three": "https://gitee.com/metamaker/AweSDK-ThreeJS.git#最新版本号"
   }
 ```
 
@@ -60,12 +60,132 @@ metamaker-for-three 暂时没有上 npm，通过在 packagejson 中添加 github
 <script src="<您的js存放地址>/metamaker-for-three.js"></script>
 ```
 
-### 数字人加载
+### 接口引入
 
-数字人目前支持 gltf,zip 包含的 glb 模型 人物，开发者从黑镜开放平台，获得数字人模型文件后，通过调用。
+```
+import MMFT from 'metamaker-for-three'
+```
 
-进行模型的加载，随后添加到场景中
+1. 数字人加载
 
+   数字人目前支持 gltf,zip 包含的 glb 模型 人物，开发者从黑镜开放平台，获得数字人模型文件后，通过调用。
+
+   进行模型的加载，随后添加到场景中.
+
+   加载服务器的 glb 文件
+
+   ```js
+   import MMFT from "metamaker-for-three";
+   const path = "./your.glb";
+   const idol = await MMFT.core.loadGLTFModel(path);
+   ```
+
+   _加载 zip_： 在实际应用中，往往会使用 zip 压缩 glb 文件，**metamaker-for-three**并不直接提供加载 zip 的 glb 文件。但是你可以参考 [例子](./examples/example.ts)中的 **replaceIdol**方法中**uncompress**的解压 zip 的代码。
+
+2. 数字人动作
+
+   数字人加载完毕后，处于 A POSE 的状态，需要让数字人做某些动作
+
+   ```js
+   import * as THREE from "three";
+   import MMFT from "metamaker-for-three";
+
+   const animateName = `anim/Stand_idel`;
+   const json = await MMFT.core.loadAnimationData(animateName);
+   const clip = MMFT.core.Convert(json);
+   let mixer = new THREE.AnimationMixer(idol);
+   let action = mixer.clipAction(clip);
+   action.play();
+   ```
+
+3. 数字人口型动画
+
+   通过调用 tts 接口可以获得口型动画与音频文件，使得数字人开口说话。 而我们的关键是从接口的返回结果中获取音频文件与解析口型动画文件
+
+   ```js
+   const tts = {
+     voice_name: "zh-CN-XiaoxiaoNeural",
+     speed: 42,
+     volume: 100,
+   };
+   let response: any = await fetch("//open.metamaker.cn/api/openmm/v1/text_to_anim", {
+     method: "post",
+     headers: {
+       "Content-Type": "application/x-www-form-urlencoded",
+       Authorization: ttsAuth,
+     },
+     body: qs.stringify({
+       text: text,
+       tts_args: JSON.stringify(tts),
+       audio_type: "wav",
+       storage_type: "cloud",
+     }),
+     mode: "cors",
+   });
+
+   response = await response.json();
+   if (response.err_code !== 0) {
+     throw new Error("fetch tts failed");
+   }
+
+   let teethAnimClip = await MMFT.core.loadTTSTeethAnimation(response.ret.teeth_anim);
+   let emoAnimClip = await MMFT.core.loadTTSEmoAnimation(response.ret.expression_anim);
+   ```
+
+   [转化口型动画参考](./examples/example.ts) 中 **fetchTTSToAnim**
+
+   获得 AnimationClip ，Clip 不能直接播放，还需要变成 Animation 后才可以播放哦 。具体参考该段代码
+
+   ```js
+   import * as THREE from "three";
+   let clip = 您的加载后得到AnimateClip对象;
+   let mixer = new THREE.AimationMixer(idol);
+   let action = mixer.clipAction(clip);
+   action.play();
+   ```
+
+4. TTS 接口鉴权
+
+   TTS 接口并不是免费的，所以需要鉴权。js 代码参考
+
+   ```js
+   function makeSignCode() {
+     const convertTextToUint8Array = (text: string) => {
+       return Array.from(text).map((letter) => letter.charCodeAt(0));
+     };
+     const convertWordArrayToUint8Array = (wordArray) => {
+       const len = wordArray.words.length;
+       const uint8Array = new Uint8Array(len << 2);
+       let offset = 0;
+       let word;
+       for (let i = 0; i < len; i++) {
+         word = wordArray.words[i];
+         uint8Array[offset++] = word >> 24;
+         uint8Array[offset++] = (word >> 16) & 0xff;
+         uint8Array[offset++] = (word >> 8) & 0xff;
+         uint8Array[offset++] = word & 0xff;
+       }
+       return uint8Array;
+     };
+
+     const appKey = params.appKey;
+     const appSecret = params.appSecret;
+     const timestamp = Math.floor(new Date().getTime() / 1000);
+     console.log(`timestamp:`, timestamp);
+     const message = `${timestamp}:${appKey}`;
+     const wordsArray = CryptoJS.HmacSHA256(message, appSecret);
+     const hashSuffix = convertWordArrayToUint8Array(wordsArray);
+     const hashPrefix = convertTextToUint8Array(`${timestamp}:`);
+     const totalArray = new Uint8Array(hashPrefix.length + hashSuffix.length);
+     totalArray.set(hashPrefix);
+     totalArray.set(hashSuffix, hashPrefix.length);
+     const tempstr = String.fromCharCode.apply(null, totalArray);
+     console.log(`temp str`, tempstr);
+     const base64 = btoa(tempstr);
+     return `AW ${appKey}:${base64}`;
+   }
+   ```
+    [更多语言鉴权参考]()
 ## 注意
 
 MetaMakerDeveloper 发布的代码或数字资产（数字人、服装、动作、表情等）以及试用数字人小镜、大黑都属于黑镜科技公司，如需商用，请添加以下二维码联系，谢谢！
@@ -73,6 +193,7 @@ MetaMakerDeveloper 发布的代码或数字资产（数字人、服装、动作�
 ![image](./code.jpg)
 
 ## 更新日志
+
 2022-10-25:动画资源请求路径重复出现/符
 
 2022-09-07:example 增加动作 Loop 设置，请求动作时增加库的版本号。
