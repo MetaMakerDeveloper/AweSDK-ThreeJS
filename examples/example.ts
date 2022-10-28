@@ -348,7 +348,7 @@ async function replaceIdol(opts: string | Uint8Array) {
     idol = null;
   }
 
-  if (typeof opts == "string" && opts.endsWith(".gltf")) {
+  if (typeof opts == "string" && (opts.endsWith(".gltf") || opts.endsWith(".glb"))) {
     idol = await MMFT.core.loadGLTFModel(opts);
   } else if (typeof opts == "string") {
     const response = await fetch(opts, { method: "get" });
