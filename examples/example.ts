@@ -64,6 +64,7 @@ const params = {
     input.click();
   },
   播放口型动画: async () => {
+    clearTTSResource();
     const tclip = await MMFT.core.loadTTSTeethAnimation(params.teethAnimURL);
     const eclip = await MMFT.core.loadTTSEmoAnimation(params.emoAnimURL);
     activeTTSResource.teeth = mixer.clipAction(tclip);
