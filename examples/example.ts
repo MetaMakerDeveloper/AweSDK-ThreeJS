@@ -63,6 +63,15 @@ const params = {
     });
     input.click();
   },
+  播放口型动画: async () => {
+    clearTTSResource();
+    const tclip = await MMFT.core.loadTTSTeethAnimation(params.teethAnimURL);
+    const eclip = await MMFT.core.loadTTSEmoAnimation(params.emoAnimURL);
+    activeTTSResource.teeth = mixer.clipAction(tclip);
+    activeTTSResource.emo = mixer.clipAction(eclip);
+    activeTTSResource.teeth.play();
+    activeTTSResource.emo.play();
+  },
 };
 const activeActions = [];
 const activeTTSResource = {
@@ -316,18 +325,9 @@ function addGui() {
     activeTTSResource.audio = audio;
     audio.play();
   });
-  ttsGui.add(params, "teethAnimURL").onChange(async (value) => {
-    clearTTSResource();
-    const clip = await MMFT.core.loadTTSTeethAnimation(value);
-    activeTTSResource.teeth = mixer.clipAction(clip);
-    activeTTSResource.teeth.play();
-  });
-  ttsGui.add(params, "emoAnimURL").onChange(async (value) => {
-    clearTTSResource();
-    const clip = await MMFT.core.loadTTSEmoAnimation(value);
-    activeTTSResource.teeth = mixer.clipAction(clip);
-    activeTTSResource.teeth.play();
-  });
+  ttsGui.add(params, "teethAnimURL");
+  ttsGui.add(params, "emoAnimURL");
+  ttsGui.add(params, "播放口型动画");
 
   const zipLoaderGui = gui.addFolder("ZipGlbLoader");
   zipLoaderGui.add(params, "加载GLBZip包");
