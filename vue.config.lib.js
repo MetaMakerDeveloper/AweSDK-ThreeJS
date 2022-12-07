@@ -36,8 +36,8 @@ module.exports = defineConfig({
     config.output.filename = "metamaker-for-three.js";
     config.output.library = {
       root: "_MMFT",
-      amd: "_MMFT",
-      commonjs: "_MMFT",
+      amd: "metamaker-for-three",
+      commonjs: "metamaker-for-three",
     };
     config.output.libraryExport = "default";
     config.output.libraryTarget = "umd";
