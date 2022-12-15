@@ -69,10 +69,15 @@ function parseGLTFModel(buffer: ArrayBuffer): Promise<THREE.Group> {
 function setModelInfo(model) {
   resetMaterial(model);
 
-  let body = model.getObjectByName("body").children[0] as THREE.Mesh;
-  if (!body.morphTargetDictionary) {
-    body = body.parent.children[1] as THREE.Mesh;
+  let body =model.getObjectByName("head_part");
+
+  if(body==undefined){
+    let body = model.getObjectByName("body").children[0] as THREE.Mesh;
+    if (!body.morphTargetDictionary) {
+      body = body.parent.children[1] as THREE.Mesh;
+    }
   }
+ 
   setBodyMorphTargetDictionary(body.name, body.morphTargetDictionary);
   let teeth = model.getObjectByName("tooth_down") as THREE.Mesh;
   if (!teeth.morphTargetDictionary) {
