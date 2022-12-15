@@ -68,6 +68,7 @@ function parseGLTFModel(buffer: ArrayBuffer): Promise<THREE.Group> {
 // 设置Model信息
 function setModelInfo(model) {
   resetMaterial(model);
+
   let body = model.getObjectByName("body").children[0] as THREE.Mesh;
   if (!body.morphTargetDictionary) {
     body = body.parent.children[1] as THREE.Mesh;
