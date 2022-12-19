@@ -5,6 +5,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Stats from "three/examples/jsm/libs/stats.module.js";
 import * as fflate from "fflate";
 import CryptoJS from "crypto-js";
+import {ClothPhysicManagerInstance} from "../src/lib/core/utils/ClothPhysics"
 
 import qs from "qs";
 let renderer;
@@ -38,7 +39,7 @@ const params = {
   audioURL: "",
   teethAnimURL: "",
   emoAnimURL: "",
-  appKey: "",
+  appKey: "", 
   appSecret: "",
   loop: THREE.LoopRepeat,
   发送TTS请求: async function () {
@@ -153,6 +154,7 @@ window.onload = async () => {
     try {
       mixer && mixer.update(delta);
       gui && gui.controllersRecursive().forEach((controller) => controller.updateDisplay());
+      ClothPhysicManagerInstance.update(delta);
     } catch (e) {
       console.error(e);
     } finally {
@@ -358,6 +360,8 @@ async function replaceIdol(opts: string | Uint8Array) {
   } else {
     idol = await MMFT.core.parseGLTFModel(opts.buffer);
   }
+  ClothPhysicManagerInstance.setClothPhysics(idol);
+
   MMFT.core.resetPolygonOffset(idol, camera);
   mixer = new THREE.AnimationMixer(idol);
   scene.add(idol);

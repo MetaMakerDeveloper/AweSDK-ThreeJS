@@ -28,6 +28,7 @@ function loadGLTFModel(url: string): Promise<THREE.Group> {
         //    }
         // }
       });
+      
       setModelInfo(model);
       resolve(model);
     });
@@ -65,19 +66,38 @@ function parseGLTFModel(buffer: ArrayBuffer): Promise<THREE.Group> {
   });
 }
 
+//兼容2.0融合变形名称
+function remapMorphtarget(obj){
+    for(var key in obj.morphTargetDictionary){
+      var ss = key.split("_");
+      var newKey = key.replace("_"+ss[ss.length-1], "");
+      obj.morphTargetDictionary[newKey] = obj.morphTargetDictionary[key];
+    }
+}
 // 设置Model信息
 function setModelInfo(model) {
   resetMaterial(model);
 
-  let body = model.getObjectByName("body").children[0] as THREE.Mesh;
-  if (!body.morphTargetDictionary) {
-    body = body.parent.children[1] as THREE.Mesh;
+  let body =model.getObjectByName("head_part");
+
+  if(body==undefined){
+    let body = model.getObjectByName("body").children[0] as THREE.Mesh;
+    if (!body.morphTargetDictionary) {
+      body = body.parent.children[1] as THREE.Mesh;
+    }
   }
-  setBodyMorphTargetDictionary(body.name, body.morphTargetDictionary);
+
   let teeth = model.getObjectByName("tooth_down") as THREE.Mesh;
   if (!teeth.morphTargetDictionary) {
     teeth = teeth.children[0] as THREE.Mesh;
   }
+
+  if(model.getObjectByName("character").userData.developVersion=="2.0"){
+      remapMorphtarget(body);
+      remapMorphtarget(teeth);
+  }
+  setBodyMorphTargetDictionary(body.name, body.morphTargetDictionary);
+ 
   setTeethMorphTargetDictionary(teeth.name, teeth.morphTargetDictionary);
   teeth.updateMorphTargets();
   body.updateMorphTargets();
