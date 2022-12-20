@@ -7,7 +7,6 @@ import * as fflate from "fflate";
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'; 
 import CryptoJS from "crypto-js";
 import { ClothPhysicManagerInstance } from "../src/lib/core/utils/ClothPhysics";
-import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 
 import qs from "qs";
 let renderer;
