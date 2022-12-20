@@ -149,15 +149,7 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   MMFT.core.resetPolygonOffset(idol, camera);
 
   mixer = new THREE.AnimationMixer(idol);
-  idol.traverse(child => {
-    if (child instanceof THREE.Mesh) {
-       // child.material.envMap = envMap;
-        child.material.envMapIntensity = 0.3;
-        child.material.needsUpdate = true;
-        child.castShadow = true;
-        child.receiveShadow = true;
-    }
-})
+
   scene.add(idol);
   addDefaultLights(scene);
   const clock = new THREE.Clock();
@@ -407,6 +399,15 @@ async function replaceIdol(opts: string | Uint8Array) {
   } else {
     idol = await MMFT.core.parseGLTFModel(opts.buffer);
   }
+  idol.traverse(child => {
+    if (child instanceof THREE.Mesh) {
+       // child.material.envMap = envMap;
+        child.material.envMapIntensity = 0.3;
+        child.material.needsUpdate = true;
+        child.castShadow = true;
+        child.receiveShadow = true;
+    }
+})
   MMFT.core.resetPolygonOffset(idol, camera);
   mixer = new THREE.AnimationMixer(idol);
   scene.add(idol);
