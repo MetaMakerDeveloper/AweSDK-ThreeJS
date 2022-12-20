@@ -249,8 +249,16 @@ directionalLight.shadow.camera.left = - 2
   scene.add(spot);
   scene.add(spot.target);
 
-
-
+  
+  var material = new THREE.ShadowMaterial();
+  material.opacity = 0.3; //! bug in threejs. can't set in constructor
+  material.depthWrite = false;
+  var geometry = new THREE.PlaneGeometry(3, 3)
+  var planeMesh = new THREE.Mesh( geometry, material);
+  planeMesh.receiveShadow = true;
+  //planeMesh.d = false;
+  planeMesh.rotation.x = -Math.PI/2
+  scene.add(planeMesh);
   var loader = new RGBELoader();
   loader.setPath( './textures/' )
   loader.load( '4kLR.hdr', function( texture ) {
