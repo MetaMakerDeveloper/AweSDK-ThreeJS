@@ -5,8 +5,8 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Stats from "three/examples/jsm/libs/stats.module.js";
 import * as fflate from "fflate";
 import CryptoJS from "crypto-js";
-import {ClothPhysicManagerInstance} from "../src/lib/core/utils/ClothPhysics"
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
+import { ClothPhysicManagerInstance } from "../src/lib/core/utils/ClothPhysics";
+import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 
 import qs from "qs";
 let renderer;
@@ -40,7 +40,7 @@ const params = {
   audioURL: "",
   teethAnimURL: "",
   emoAnimURL: "",
-  appKey: "", 
+  appKey: "",
   appSecret: "",
   loop: THREE.LoopRepeat,
   发送TTS请求: async function () {
@@ -226,24 +226,15 @@ function addDefaultLights(scene: THREE.Scene) {
   scene.add(spot);
   scene.add(spot.target);
 
-  var loader = new RGBELoader();
-  loader.setPath( './textures/' )
-loader.load( '4k.hdr', function( texture ) {
-
-// once it's loaded, create the helper and use it
-const gen = new THREE.PMREMGenerator(renderer)
-const envMap = gen.fromEquirectangular(texture).texture;
-envMap.encoding = THREE.sRGBEncoding;
-
-//envMap.material = THREE.EquirectangularReflectionMapping;
-scene.environment = envMap;
-scene.background = envMap;
-// equiToCube = new EquirectangularToCubemap( renderer );
-
-// convert the image, in this case it's been used as environment map
-
-
-} );
+  const loader = new RGBELoader();
+  loader.setPath("./textures/");
+  loader.load("4k.hdr", function (texture) {
+    const gen = new THREE.PMREMGenerator(renderer);
+    const envMap = gen.fromEquirectangular(texture).texture;
+    envMap.encoding = THREE.sRGBEncoding;
+    scene.environment = envMap;
+    scene.background = envMap;
+  });
 }
 
 /**
