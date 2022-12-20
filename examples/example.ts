@@ -6,6 +6,7 @@ import Stats from "three/examples/jsm/libs/stats.module.js";
 import * as fflate from "fflate";
 import CryptoJS from "crypto-js";
 import {ClothPhysicManagerInstance} from "../src/lib/core/utils/ClothPhysics"
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 
 import qs from "qs";
 let renderer;
@@ -120,6 +121,7 @@ window.onload = async () => {
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(canvasRect.width, canvasRect.height);
   renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.physicallyCorrectLights = true;
   app.appendChild(renderer.domElement);
   // 创建Scene
   scene = new THREE.Scene();
@@ -223,6 +225,25 @@ function addDefaultLights(scene: THREE.Scene) {
   spot.position.set(0.39, 1.19, -0.91);
   scene.add(spot);
   scene.add(spot.target);
+
+  var loader = new RGBELoader();
+  loader.setPath( './textures/' )
+loader.load( '4k.hdr', function( texture ) {
+
+// once it's loaded, create the helper and use it
+const gen = new THREE.PMREMGenerator(renderer)
+const envMap = gen.fromEquirectangular(texture).texture;
+envMap.encoding = THREE.sRGBEncoding;
+
+//envMap.material = THREE.EquirectangularReflectionMapping;
+scene.environment = envMap;
+scene.background = envMap;
+// equiToCube = new EquirectangularToCubemap( renderer );
+
+// convert the image, in this case it's been used as environment map
+
+
+} );
 }
 
 /**
