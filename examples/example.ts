@@ -385,8 +385,9 @@ async function replaceIdol(opts: string | Uint8Array) {
  * 通过动画名称加载的的动画资源，并进行播放
  */
 async function handleChangePose(value: string) {
-  const animateJSON = await MMFT.core.loadAnimationData(value);
-  const clip = MMFT.core.Convert(animateJSON);
+  //const animateJSON = await MMFT.core.loadAnimationData(value);
+  //const clip = MMFT.core.Convert(animateJSON);
+  const clip = await MMFT.core.loadGLTFAnimation("./models/gltf/animation/tts2.glb"); ///////////////////////////liujun,临时测试
   console.warn(`pose clip `, clip);
   const action = mixer.clipAction(clip);
   while (activeActions.length) {

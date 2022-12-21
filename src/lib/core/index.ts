@@ -65,7 +65,16 @@ function parseGLTFModel(buffer: ArrayBuffer): Promise<THREE.Group> {
     );
   });
 }
-
+function loadGLTFAnimation(url: string): Promise<THREE.AnimationClip> {
+  return new Promise((resolve) => {
+    const loader = new GLTFLoader();
+    loader.load(url, (gltf) => {
+      //console.log("XXXXXXXXXXXXXXXXXXXXXXX"+url)
+      //console.log(gltf.animations)
+      resolve(gltf.animations[0]);
+    });
+  });
+}
 //兼容2.0融合变形名称
 function remapMorphtarget(obj){
     for(var key in obj.morphTargetDictionary){
@@ -120,5 +129,6 @@ export {
   parseGLTFModel,
   loadTTSTeethAnimation,
   loadTTSEmoAnimation,
-  resetPolygonOffset
+  resetPolygonOffset,
+  loadGLTFAnimation
 };
