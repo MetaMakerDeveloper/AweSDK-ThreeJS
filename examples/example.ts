@@ -4,9 +4,9 @@ import MMFT from "@/lib";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Stats from "three/examples/jsm/libs/stats.module.js";
 import * as fflate from "fflate";
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'; 
 import CryptoJS from "crypto-js";
 import { ClothPhysicManagerInstance } from "../src/lib/core/utils/ClothPhysics";
-import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 
 import qs from "qs";
 let renderer;
@@ -121,7 +121,11 @@ window.onload = async () => {
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(canvasRect.width, canvasRect.height);
   renderer.outputEncoding = THREE.sRGBEncoding;
+
+
   renderer.physicallyCorrectLights = true;
+  renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap; 
   app.appendChild(renderer.domElement);
   // 创建Scene
   scene = new THREE.Scene();
@@ -147,6 +151,7 @@ window.onload = async () => {
   MMFT.core.resetPolygonOffset(idol, camera);
 
   mixer = new THREE.AnimationMixer(idol);
+
   scene.add(idol);
   addDefaultLights(scene);
   const clock = new THREE.Clock();
@@ -189,12 +194,30 @@ function addDefaultLights(scene: THREE.Scene) {
   dirLight.position.set(-1.45, 1, 3.57);
   scene.add(dirLight);
 
-  const hemiLight = new THREE.HemisphereLight(0xffffff);
-  hemiLight.visible = true;
-  hemiLight.intensity = 0.15;
-  hemiLight.position.set(0, 0, 20);
-  scene.add(hemiLight);
+  const directionalLight = new THREE.DirectionalLight( 0xaaaaaa );
+				directionalLight.position.set(  -10, 35, 15 ).normalize();
+				directionalLight.castShadow = true;
+				directionalLight.shadow.mapSize.width = 2048; // default
+				directionalLight.shadow.mapSize.height = 2048; // default
+				directionalLight.shadow.bias = -0.0001;
+			
+        directionalLight.shadow.camera.near = 0.1; // default
+				directionalLight.shadow.camera.far = 10; // default
+        directionalLight.shadow.camera.top = 2
+directionalLight.shadow.camera.right = 2
+directionalLight.shadow.camera.bottom = - 2
+directionalLight.shadow.camera.left = - 2
+        scene.add(directionalLight);
+        //scene.add(new THREE.CameraHelper(directionalLight.shadow.camera)) 
+  const ambient = new THREE.AmbientLight( 0xaaaaaa );
+  scene.add( ambient );
+  // const hemiLight = new THREE.HemisphereLight(0xffffff);
+  // hemiLight.visible = true;
+  // hemiLight.intensity = 0.15;
+  // hemiLight.position.set(0, 0, 20);
+  //scene.add(hemiLight);
 
+     
   let spot = new THREE.SpotLight(0xffffff);
   spot.color = new THREE.Color(0xffffff);
   spot.visible = true;
@@ -226,15 +249,31 @@ function addDefaultLights(scene: THREE.Scene) {
   scene.add(spot);
   scene.add(spot.target);
 
-  const loader = new RGBELoader();
-  loader.setPath("./textures/");
-  loader.load("4k.hdr", function (texture) {
-    const gen = new THREE.PMREMGenerator(renderer);
-    const envMap = gen.fromEquirectangular(texture).texture;
-    envMap.encoding = THREE.sRGBEncoding;
-    scene.environment = envMap;
-    scene.background = envMap;
-  });
+  
+  var material = new THREE.ShadowMaterial();
+  material.opacity = 0.3; //! bug in threejs. can't set in constructor
+  material.depthWrite = false;
+  var geometry = new THREE.PlaneGeometry(3, 3)
+  var planeMesh = new THREE.Mesh( geometry, material);
+  planeMesh.receiveShadow = true;
+  //planeMesh.d = false;
+  planeMesh.rotation.x = -Math.PI/2
+  scene.add(planeMesh);
+  var loader = new RGBELoader();
+  loader.setPath( './textures/' )
+  loader.load( '4kLR.hdr', function( texture ) {
+
+// once it's loaded, create the helper and use it
+const gen = new THREE.PMREMGenerator(renderer)
+const envMap = gen.fromEquirectangular(texture).texture;
+envMap.encoding = THREE.sRGBEncoding;
+
+//envMap.material = THREE.EquirectangularReflectionMapping;
+scene.environment = envMap;
+//scene.background = envMap;
+
+
+} );
 }
 
 /**
@@ -374,6 +413,16 @@ async function replaceIdol(opts: string | Uint8Array) {
   }
   ClothPhysicManagerInstance.setClothPhysics(idol);
 
+
+  idol.traverse(child => {
+    if (child instanceof THREE.Mesh) {
+       // child.material.envMap = envMap;
+        child.material.envMapIntensity = 0.3;
+        child.material.needsUpdate = true;
+        child.castShadow = true;
+        child.receiveShadow = true;
+    }
+})
   MMFT.core.resetPolygonOffset(idol, camera);
   mixer = new THREE.AnimationMixer(idol);
   scene.add(idol);

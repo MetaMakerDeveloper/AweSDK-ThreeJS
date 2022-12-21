@@ -271,6 +271,7 @@ class ClothPhysicManager {
             // child.material.envMap = envMap;
             if (!ok) {
               var cp = new ClothPhysics(c, body, child.userData["dynamic"]);
+              cp.resetPos=true
               //var h = cp.createHelper();
               //scene.add(h);
               if (this.clothPhysics[gltf] == undefined) this.clothPhysics[gltf] = [];
@@ -290,6 +291,7 @@ class ClothPhysicManager {
     this.clothPhysics = {};
   }
   update(dt) {
+    dt=0.016;
     for (var key in this.clothPhysics) {
       const clothes = this.clothPhysics[key];
       if (clothes != undefined) {
