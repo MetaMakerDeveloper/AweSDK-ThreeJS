@@ -74,6 +74,12 @@ const params = {
     activeTTSResource.teeth.play();
     activeTTSResource.emo.play();
   },
+  播放GLB动画: async () => {
+   
+    const clip = await MMFT.core.loadGLTFAnimation(params.teethAnimURL); ///////////////////////////liujun,临时测试
+    const action = mixer.clipAction(clip);
+    action.play();
+  },
 };
 const activeActions = [];
 const activeTTSResource = {
@@ -108,7 +114,30 @@ window.onload = async () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
   }
   window.addEventListener("resize", onResize);
+  document.addEventListener( 'dragover', function ( event ) {
 
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'copy';
+
+  } );
+
+  document.addEventListener( 'drop', function ( event ) {
+
+    event.preventDefault();
+
+    if ( event.dataTransfer.types[ 0 ] === 'text/plain' ) return; // Outliner drop
+
+    if ( event.dataTransfer.items ) {
+
+      // DataTransferItemList supports folders
+
+
+    } else {
+
+
+    }
+
+  } );
   // 创建renderer
   renderer = new THREE.WebGLRenderer({
     antialias: true,
@@ -381,7 +410,7 @@ function addGui() {
   ttsGui.add(params, "teethAnimURL");
   ttsGui.add(params, "emoAnimURL");
   ttsGui.add(params, "播放口型动画");
-
+  ttsGui.add(params, "播放GLB动画")
   const zipLoaderGui = gui.addFolder("ZipGlbLoader");
   zipLoaderGui.add(params, "加载GLBZip包");
 }
