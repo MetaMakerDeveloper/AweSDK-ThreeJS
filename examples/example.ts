@@ -4,7 +4,7 @@ import MMFT from "@/lib";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Stats from "three/examples/jsm/libs/stats.module.js";
 import * as fflate from "fflate";
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'; 
+import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 import CryptoJS from "crypto-js";
 import { ClothPhysicManagerInstance } from "../src/lib/core/utils/ClothPhysics";
 
@@ -75,7 +75,6 @@ const params = {
     activeTTSResource.emo.play();
   },
   播放GLB动画: async () => {
-   
     const clip = await MMFT.core.loadGLTFAnimation(params.teethAnimURL); ///////////////////////////liujun,临时测试
     const action = mixer.clipAction(clip);
     action.play();
@@ -114,30 +113,21 @@ window.onload = async () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
   }
   window.addEventListener("resize", onResize);
-  document.addEventListener( 'dragover', function ( event ) {
-
+  document.addEventListener("dragover", function (event) {
     event.preventDefault();
-    event.dataTransfer.dropEffect = 'copy';
+    event.dataTransfer.dropEffect = "copy";
+  });
 
-  } );
-
-  document.addEventListener( 'drop', function ( event ) {
-
+  document.addEventListener("drop", function (event) {
     event.preventDefault();
 
-    if ( event.dataTransfer.types[ 0 ] === 'text/plain' ) return; // Outliner drop
+    if (event.dataTransfer.types[0] === "text/plain") return; // Outliner drop
 
-    if ( event.dataTransfer.items ) {
-
+    if (event.dataTransfer.items) {
       // DataTransferItemList supports folders
-
-
     } else {
-
-
     }
-
-  } );
+  });
   // 创建renderer
   renderer = new THREE.WebGLRenderer({
     antialias: true,
@@ -151,10 +141,9 @@ window.onload = async () => {
   renderer.setSize(canvasRect.width, canvasRect.height);
   renderer.outputEncoding = THREE.sRGBEncoding;
 
-
   renderer.physicallyCorrectLights = true;
   renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap; 
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   app.appendChild(renderer.domElement);
   // 创建Scene
   scene = new THREE.Scene();
@@ -223,30 +212,29 @@ function addDefaultLights(scene: THREE.Scene) {
   dirLight.position.set(-1.45, 1, 3.57);
   scene.add(dirLight);
 
-  const directionalLight = new THREE.DirectionalLight( 0xaaaaaa );
-				directionalLight.position.set(  -10, 35, 15 ).normalize();
-				directionalLight.castShadow = true;
-				directionalLight.shadow.mapSize.width = 2048; // default
-				directionalLight.shadow.mapSize.height = 2048; // default
-				directionalLight.shadow.bias = -0.0001;
-			
-        directionalLight.shadow.camera.near = 0.1; // default
-				directionalLight.shadow.camera.far = 10; // default
-        directionalLight.shadow.camera.top = 2
-directionalLight.shadow.camera.right = 2
-directionalLight.shadow.camera.bottom = - 2
-directionalLight.shadow.camera.left = - 2
-        scene.add(directionalLight);
-        //scene.add(new THREE.CameraHelper(directionalLight.shadow.camera)) 
-  const ambient = new THREE.AmbientLight( 0xaaaaaa );
-  scene.add( ambient );
+  const directionalLight = new THREE.DirectionalLight(0xaaaaaa);
+  directionalLight.position.set(-10, 35, 15).normalize();
+  directionalLight.castShadow = true;
+  directionalLight.shadow.mapSize.width = 2048; // default
+  directionalLight.shadow.mapSize.height = 2048; // default
+  directionalLight.shadow.bias = -0.0001;
+
+  directionalLight.shadow.camera.near = 0.1; // default
+  directionalLight.shadow.camera.far = 10; // default
+  directionalLight.shadow.camera.top = 2;
+  directionalLight.shadow.camera.right = 2;
+  directionalLight.shadow.camera.bottom = -2;
+  directionalLight.shadow.camera.left = -2;
+  scene.add(directionalLight);
+  //scene.add(new THREE.CameraHelper(directionalLight.shadow.camera))
+  const ambient = new THREE.AmbientLight(0xaaaaaa);
+  scene.add(ambient);
   // const hemiLight = new THREE.HemisphereLight(0xffffff);
   // hemiLight.visible = true;
   // hemiLight.intensity = 0.15;
   // hemiLight.position.set(0, 0, 20);
   //scene.add(hemiLight);
 
-     
   let spot = new THREE.SpotLight(0xffffff);
   spot.color = new THREE.Color(0xffffff);
   spot.visible = true;
@@ -278,31 +266,27 @@ directionalLight.shadow.camera.left = - 2
   scene.add(spot);
   scene.add(spot.target);
 
-  
-  var material = new THREE.ShadowMaterial();
+  const material = new THREE.ShadowMaterial();
   material.opacity = 0.3; //! bug in threejs. can't set in constructor
   material.depthWrite = false;
-  var geometry = new THREE.PlaneGeometry(3, 3)
-  var planeMesh = new THREE.Mesh( geometry, material);
+  const geometry = new THREE.PlaneGeometry(3, 3);
+  const planeMesh = new THREE.Mesh(geometry, material);
   planeMesh.receiveShadow = true;
   //planeMesh.d = false;
-  planeMesh.rotation.x = -Math.PI/2
+  planeMesh.rotation.x = -Math.PI / 2;
   scene.add(planeMesh);
-  var loader = new RGBELoader();
-  loader.setPath( './textures/' )
-  loader.load( '4kLR.hdr', function( texture ) {
+  const loader = new RGBELoader();
+  loader.setPath("./textures/");
+  loader.load("4kLR.hdr", function (texture) {
+    // once it's loaded, create the helper and use it
+    const gen = new THREE.PMREMGenerator(renderer);
+    const envMap = gen.fromEquirectangular(texture).texture;
+    envMap.encoding = THREE.sRGBEncoding;
 
-// once it's loaded, create the helper and use it
-const gen = new THREE.PMREMGenerator(renderer)
-const envMap = gen.fromEquirectangular(texture).texture;
-envMap.encoding = THREE.sRGBEncoding;
-
-//envMap.material = THREE.EquirectangularReflectionMapping;
-scene.environment = envMap;
-//scene.background = envMap;
-
-
-} );
+    //envMap.material = THREE.EquirectangularReflectionMapping;
+    scene.environment = envMap;
+    //scene.background = envMap;
+  });
 }
 
 /**
@@ -410,7 +394,7 @@ function addGui() {
   ttsGui.add(params, "teethAnimURL");
   ttsGui.add(params, "emoAnimURL");
   ttsGui.add(params, "播放口型动画");
-  ttsGui.add(params, "播放GLB动画")
+  ttsGui.add(params, "播放GLB动画");
   const zipLoaderGui = gui.addFolder("ZipGlbLoader");
   zipLoaderGui.add(params, "加载GLBZip包");
 }
@@ -442,16 +426,15 @@ async function replaceIdol(opts: string | Uint8Array) {
   }
   ClothPhysicManagerInstance.setClothPhysics(idol);
 
-
-  idol.traverse(child => {
+  idol.traverse((child) => {
     if (child instanceof THREE.Mesh) {
-       // child.material.envMap = envMap;
-        child.material.envMapIntensity = 0.3;
-        child.material.needsUpdate = true;
-        child.castShadow = true;
-        child.receiveShadow = true;
+      // child.material.envMap = envMap;
+      child.material.envMapIntensity = 0.3;
+      child.material.needsUpdate = true;
+      child.castShadow = true;
+      child.receiveShadow = true;
     }
-})
+  });
   MMFT.core.resetPolygonOffset(idol, camera);
   mixer = new THREE.AnimationMixer(idol);
   scene.add(idol);
@@ -463,9 +446,8 @@ async function replaceIdol(opts: string | Uint8Array) {
  * 通过动画名称加载的的动画资源，并进行播放
  */
 async function handleChangePose(value: string) {
-  //const animateJSON = await MMFT.core.loadAnimationData(value);
-  //const clip = MMFT.core.Convert(animateJSON);
-  const clip = await MMFT.core.loadGLTFAnimation("./models/gltf/animation/tts2.glb"); ///////////////////////////liujun,临时测试
+  const animateJSON = await MMFT.core.loadAnimationData(value);
+  const clip = MMFT.core.Convert(animateJSON);
   console.warn(`pose clip `, clip);
   const action = mixer.clipAction(clip);
   while (activeActions.length) {
