@@ -59,7 +59,6 @@ export default function Convert(fp, isEmotion = false) {
             vs[j * 3 + 2] = zs[j];
           }
           var track = new THREE.KeyframeTrack(trackName, times, vs, THREE.InterpolateLinear);
-          kfs.push(track);
         } else if (str.indexOf("Scale") > 0) {
           vs = new Float32Array(xs.length * 3);
           for (var j = 0; j < xs.length; j++) {
