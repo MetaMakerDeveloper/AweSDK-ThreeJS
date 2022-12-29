@@ -7,7 +7,8 @@ import * as fflate from "fflate";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 import CryptoJS from "crypto-js";
 import { ClothPhysicManagerInstance } from "../src/lib/core/utils/ClothPhysics";
-
+import { HDRCubeTextureLoader } from 'three/examples/jsm/loaders//HDRCubeTextureLoader.js';
+import { RGBMLoader } from 'three/examples/jsm/loaders/RGBMLoader.js';
 import qs from "qs";
 let renderer;
 let scene;
@@ -275,18 +276,17 @@ function addDefaultLights(scene: THREE.Scene) {
   //planeMesh.d = false;
   planeMesh.rotation.x = -Math.PI / 2;
   scene.add(planeMesh);
-  const loader = new RGBELoader();
-  loader.setPath("./textures/");
-  loader.load("4kLR.hdr", function (texture) {
-    // once it's loaded, create the helper and use it
-    const gen = new THREE.PMREMGenerator(renderer);
-    const envMap = gen.fromEquirectangular(texture).texture;
-    envMap.encoding = THREE.sRGBEncoding;
-
-    //envMap.material = THREE.EquirectangularReflectionMapping;
-    scene.environment = envMap;
-    //scene.background = envMap;
-  });
+  const hdrUrls = [ 'px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png' ];
+				const hdrCubeMap = new THREE.CubeTextureLoader()
+					.setPath( './textures/windows/' )
+					.load( hdrUrls, function () {
+            const gen = new THREE.PMREMGenerator(renderer);
+						const hdrCubeRenderTarget = gen.fromCubemap( hdrCubeMap );
+						hdrCubeMap.magFilter = THREE.LinearFilter;
+						hdrCubeMap.needsUpdate = true;
+            hdrCubeMap.encoding = THREE.sRGBEncoding;
+            scene.environment = hdrCubeRenderTarget.texture;
+					} );
 }
 
 /**
