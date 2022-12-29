@@ -427,10 +427,11 @@ async function replaceIdol(opts: string | Uint8Array) {
   ClothPhysicManagerInstance.setClothPhysics(idol);
 
   idol.traverse((child) => {
-    if (child instanceof THREE.Mesh) {
+    if (child.type == "Mesh" || child.type=="SkinnedMesh") {
       // child.material.envMap = envMap;
-      child.material.envMapIntensity = 0.3;
-      child.material.needsUpdate = true;
+      let anyTing:any = child;
+      anyTing.material.envMapIntensity = 0.3;
+      anyTing.material.needsUpdate = true;
       child.castShadow = true;
       child.receiveShadow = true;
     }
