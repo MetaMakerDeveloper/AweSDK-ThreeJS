@@ -6,7 +6,7 @@ import Stats from "three/examples/jsm/libs/stats.module.js";
 import * as fflate from "fflate";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 import CryptoJS from "crypto-js";
-import { ClothPhysicManagerInstance } from "../src/lib/core/utils/ClothPhysics";
+import { ClothPhysicManagerInstance ,setClothPhysics, updateClothPhysics} from "../src/lib/core/utils/ClothPhysics";
 import { HDRCubeTextureLoader } from 'three/examples/jsm/loaders//HDRCubeTextureLoader.js';
 import { RGBMLoader } from 'three/examples/jsm/loaders/RGBMLoader.js';
 import qs from "qs";
@@ -180,7 +180,7 @@ window.onload = async () => {
     try {
       mixer && mixer.update(delta);
       gui && gui.controllersRecursive().forEach((controller) => controller.updateDisplay());
-      ClothPhysicManagerInstance.update(delta);
+      updateClothPhysics();
     } catch (e) {
       console.error(e);
     } finally {
@@ -424,7 +424,7 @@ async function replaceIdol(opts: string | Uint8Array) {
   } else {
     idol = await MMFT.core.parseGLTFModel(opts.buffer);
   }
-  ClothPhysicManagerInstance.setClothPhysics(idol);
+  setClothPhysics(idol);
 
   idol.traverse((child) => {
     if (child.type == "Mesh" || child.type=="SkinnedMesh") {
