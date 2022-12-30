@@ -18,10 +18,10 @@
     "fflate": "^0.7.3",
     "js-base64": "^3.7.2",
     "lil-gui": "^0.17.0",
-    "qs": "^6.11.0",
-    "three": "^0.143.0",
-    "vue": "^3.2.13",
-    "yargs": "^17.5.1"
+    "qs": "^6.11.0"
+  },
+  "peerDependencies": {
+    "three": "^0.143.0"
   },
   "devDependencies": {
     "@types/jest": "^27.0.1",
