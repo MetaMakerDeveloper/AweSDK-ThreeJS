@@ -26,6 +26,9 @@ export default function Convert(fp, isEmotion = false) {
   // console.log(fp);
   const kfs = new Array<THREE.KeyframeTrack>();
   const arry = fp["CurveInfos"] as Array<JSON>;
+  var resetOrigin = fp["resetOrigin"];
+  if(resetOrigin==undefined)
+    resetOrigin =true;
   for (let i = 0; i < arry.length; i++) {
     const element = arry[i];
     const str = element["PathKey"] as string;
@@ -54,11 +57,22 @@ export default function Convert(fp, isEmotion = false) {
         if (str.indexOf("Position") > 0) {
           vs = new Float32Array(xs.length * 3);
           for (var j = 0; j < xs.length; j++) {
+            
             vs[j * 3] = -xs[j];
             vs[j * 3 + 1] = ys[j];
             vs[j * 3 + 2] = zs[j];
+
+            if(str.includes("hips/hips1:")){
+               if(resetOrigin==true){
+                vs[j * 3] -= -xs[0];
+                vs[j * 3 + 1] -= ys[0];
+                vs[j * 3 + 2] -= zs[0];
+               }
+            }
           }
           var track = new THREE.KeyframeTrack(trackName, times, vs, THREE.InterpolateLinear);
+          if(str.includes("hips/hips1:"))
+            kfs.push(track);
         } else if (str.indexOf("Scale") > 0) {
           vs = new Float32Array(xs.length * 3);
           for (var j = 0; j < xs.length; j++) {
