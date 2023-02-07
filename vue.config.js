@@ -7,6 +7,7 @@ if (process.env.VUE_BUILD_APP == "mlib") {
 } else {
   module.exports = defineConfig({
     transpileDependencies: true,
+    lintOnSave: false,
     pages: {
       index: "./examples/example.ts",
     },
