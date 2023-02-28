@@ -113,12 +113,12 @@ function setModelInfo(model) {
   return model;
 }
 
-function loadTTSTeethAnimation(url: string): Promise<THREE.AnimationClip> {
-  return downloadAnimation(url, Tooth_downMeshName);
+function loadTTSTeethAnimation(url: string , ratio?:number): Promise<THREE.AnimationClip> {
+  return downloadAnimation(url, Tooth_downMeshName , ratio);
 }
 
-function loadTTSEmoAnimation(url: string): Promise<THREE.AnimationClip> {
-  return downloadAnimation(url, bodyMeshName);
+function loadTTSEmoAnimation(url: string,ratio?:number): Promise<THREE.AnimationClip> {
+  return downloadAnimation(url, bodyMeshName , ratio);
 }
 
 export {

@@ -3,7 +3,7 @@ import { downloadData } from "./downloadData";
 import * as fflate from "fflate";
 import { getSuffixName, largeUint8ArrayToString } from ".";
 import cryptoModule from "./metacrypto.js";
-export async function downloadAnimation(animationName, geometryName) {
+export async function downloadAnimation(animationName, geometryName, ratio = 0.65) {
   let arraybuffer: ArrayBuffer;
   // eslint-disable-next-line prefer-const
   arraybuffer = (await downloadData(animationName, "arraybuffer")) as ArrayBuffer;
@@ -41,7 +41,7 @@ export async function downloadAnimation(animationName, geometryName) {
         dict[posj].values = [];
       }
       dict[posj].times.push(time);
-      dict[posj].values.push(magj * 0.65);
+      dict[posj].values.push(magj * ratio);
     }
   }
   console.log(dict);

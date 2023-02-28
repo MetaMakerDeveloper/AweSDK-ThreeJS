@@ -45,6 +45,8 @@ const params = {
   appKey: "",
   appSecret: "",
   loop: THREE.LoopRepeat,
+  boneRatio: 0.65,
+  toothDownRatio: 0.65,
   发送TTS请求: async function () {
     // todo
     const [audio, teeth, emo] = await fetchTTSToAnim(params.ttsText);
@@ -397,6 +399,12 @@ function addGui() {
   ttsGui.add(params, "emoAnimURL");
   ttsGui.add(params, "播放口型动画");
   ttsGui.add(params, "播放GLB动画");
+  ttsGui.add(params, "boneRatio").onChange((value) => {
+    (window as any).boneRatio = value;
+  });
+  ttsGui.add(params, "toothDownRatio").onChange((value) => {
+    (window as any).toothDownRatio = value;
+  });
   const zipLoaderGui = gui.addFolder("ZipGlbLoader");
   zipLoaderGui.add(params, "加载GLBZip包");
 }
@@ -542,8 +550,8 @@ async function fetchTTSToAnim(text: string) {
   params.emoAnimURL = response.ret.expression_anim;
   const data = await Promise.all([
     loadAudio(response.ret.audio),
-    MMFT.core.loadTTSTeethAnimation(response.ret.teeth_anim),
-    MMFT.core.loadTTSEmoAnimation(response.ret.expression_anim),
+    MMFT.core.loadTTSTeethAnimation(response.ret.teeth_anim, (window as any).toothDownRatio),
+    MMFT.core.loadTTSEmoAnimation(response.ret.expression_anim, (window as any).boneRatio),
   ]);
   const audioBuffer = data[0];
   const listener = new THREE.AudioListener();

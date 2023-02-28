@@ -114,7 +114,7 @@ export default function Convert(fp, isEmotion = false) {
           "]";
         const keys = element["Keys"] as Array<JSON>;
         const times = keys.map((k) => k["Time"] as number);
-        const values = keys.map((k) => ((k["Value"] as number) / 100) * 0.65);
+        const values = keys.map((k) => ((k["Value"] as number) / 100) * 0.65 );
         const track = new THREE.KeyframeTrack(trackName, times, values);
         kfs.push(track);
       }
