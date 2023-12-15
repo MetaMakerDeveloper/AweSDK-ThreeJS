@@ -28,6 +28,6 @@
     "tests/**/*.ts",
     "tests/**/*.tsx",
     "src/**/*.ts"
-  ],
+, "src/lib/sign/index.js"  ],
   "exclude": ["node_modules"]
 }
