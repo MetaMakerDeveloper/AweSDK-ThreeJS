@@ -4,9 +4,13 @@ import MMFT from "@/lib";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Stats from "three/examples/jsm/libs/stats.module.js";
 import * as fflate from "fflate";
+import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 import CryptoJS from "crypto-js";
 
+import { HDRCubeTextureLoader } from "three/examples/jsm/loaders//HDRCubeTextureLoader.js";
+import { RGBMLoader } from "three/examples/jsm/loaders/RGBMLoader.js";
 import qs from "qs";
+
 let renderer;
 let scene;
 let camera: THREE.PerspectiveCamera;
@@ -41,6 +45,8 @@ const params = {
   appKey: "",
   appSecret: "",
   loop: THREE.LoopRepeat,
+  boneRatio: 0.65,
+  toothDownRatio: 0.65,
   发送TTS请求: async function () {
     // todo
     const [audio, teeth, emo] = await fetchTTSToAnim(params.ttsText);
@@ -71,6 +77,11 @@ const params = {
     activeTTSResource.emo = mixer.clipAction(eclip);
     activeTTSResource.teeth.play();
     activeTTSResource.emo.play();
+  },
+  播放GLB动画: async () => {
+    const clip = await MMFT.core.loadGLTFAnimation(params.teethAnimURL); ///////////////////////////liujun,临时测试
+    const action = mixer.clipAction(clip);
+    action.play();
   },
 };
 const activeActions = [];
@@ -106,7 +117,22 @@ window.onload = async () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
   }
   window.addEventListener("resize", onResize);
+  document.addEventListener("dragover", function (event) {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "copy";
+  });
 
+  document.addEventListener("drop", function (event) {
+    event.preventDefault();
+
+    if (event.dataTransfer.types[0] === "text/plain") return; // Outliner drop
+
+    if (event.dataTransfer.items) {
+      // DataTransferItemList supports folders
+      // eslint-disable-next-line no-empty
+    } else {
+    }
+  });
   // 创建renderer
   renderer = new THREE.WebGLRenderer({
     antialias: true,
@@ -119,6 +145,10 @@ window.onload = async () => {
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(canvasRect.width, canvasRect.height);
   renderer.outputEncoding = THREE.sRGBEncoding;
+
+  renderer.physicallyCorrectLights = true;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   app.appendChild(renderer.domElement);
   // 创建Scene
   scene = new THREE.Scene();
@@ -144,6 +174,7 @@ window.onload = async () => {
   MMFT.core.resetPolygonOffset(idol, camera);
 
   mixer = new THREE.AnimationMixer(idol);
+
   scene.add(idol);
   addDefaultLights(scene);
   const clock = new THREE.Clock();
@@ -153,6 +184,7 @@ window.onload = async () => {
     try {
       mixer && mixer.update(delta);
       gui && gui.controllersRecursive().forEach((controller) => controller.updateDisplay());
+      // MMFT.ClothPhysics.ClothPhysicManagerInstance.updateClothPhysics();
     } catch (e) {
       console.error(e);
     } finally {
@@ -185,11 +217,28 @@ function addDefaultLights(scene: THREE.Scene) {
   dirLight.position.set(-1.45, 1, 3.57);
   scene.add(dirLight);
 
-  const hemiLight = new THREE.HemisphereLight(0xffffff);
-  hemiLight.visible = true;
-  hemiLight.intensity = 0.15;
-  hemiLight.position.set(0, 0, 20);
-  scene.add(hemiLight);
+  const directionalLight = new THREE.DirectionalLight(0xaaaaaa);
+  directionalLight.position.set(-10, 35, 15).normalize();
+  directionalLight.castShadow = true;
+  directionalLight.shadow.mapSize.width = 2048; // default
+  directionalLight.shadow.mapSize.height = 2048; // default
+  directionalLight.shadow.bias = -0.0001;
+
+  directionalLight.shadow.camera.near = 0.1; // default
+  directionalLight.shadow.camera.far = 10; // default
+  directionalLight.shadow.camera.top = 2;
+  directionalLight.shadow.camera.right = 2;
+  directionalLight.shadow.camera.bottom = -2;
+  directionalLight.shadow.camera.left = -2;
+  scene.add(directionalLight);
+  //scene.add(new THREE.CameraHelper(directionalLight.shadow.camera))
+  const ambient = new THREE.AmbientLight(0xaaaaaa);
+  scene.add(ambient);
+  // const hemiLight = new THREE.HemisphereLight(0xffffff);
+  // hemiLight.visible = true;
+  // hemiLight.intensity = 0.15;
+  // hemiLight.position.set(0, 0, 20);
+  //scene.add(hemiLight);
 
   let spot = new THREE.SpotLight(0xffffff);
   spot.color = new THREE.Color(0xffffff);
@@ -221,6 +270,27 @@ function addDefaultLights(scene: THREE.Scene) {
   spot.position.set(0.39, 1.19, -0.91);
   scene.add(spot);
   scene.add(spot.target);
+
+  const material = new THREE.ShadowMaterial();
+  material.opacity = 0.3; //! bug in threejs. can't set in constructor
+  material.depthWrite = false;
+  const geometry = new THREE.PlaneGeometry(3, 3);
+  const planeMesh = new THREE.Mesh(geometry, material);
+  planeMesh.receiveShadow = true;
+  //planeMesh.d = false;
+  planeMesh.rotation.x = -Math.PI / 2;
+  scene.add(planeMesh);
+  const hdrUrls = ["px.png", "nx.png", "py.png", "ny.png", "pz.png", "nz.png"];
+  const hdrCubeMap = new THREE.CubeTextureLoader()
+    .setPath("./textures/windows/")
+    .load(hdrUrls, function () {
+      const gen = new THREE.PMREMGenerator(renderer);
+      const hdrCubeRenderTarget = gen.fromCubemap(hdrCubeMap);
+      hdrCubeMap.magFilter = THREE.LinearFilter;
+      hdrCubeMap.needsUpdate = true;
+      hdrCubeMap.encoding = THREE.sRGBEncoding;
+      scene.environment = hdrCubeRenderTarget.texture;
+    });
 }
 
 /**
@@ -328,7 +398,13 @@ function addGui() {
   ttsGui.add(params, "teethAnimURL");
   ttsGui.add(params, "emoAnimURL");
   ttsGui.add(params, "播放口型动画");
-
+  ttsGui.add(params, "播放GLB动画");
+  ttsGui.add(params, "boneRatio").onChange((value) => {
+    (window as any).boneRatio = value;
+  });
+  ttsGui.add(params, "toothDownRatio").onChange((value) => {
+    (window as any).toothDownRatio = value;
+  });
   const zipLoaderGui = gui.addFolder("ZipGlbLoader");
   zipLoaderGui.add(params, "加载GLBZip包");
 }
@@ -358,6 +434,18 @@ async function replaceIdol(opts: string | Uint8Array) {
   } else {
     idol = await MMFT.core.parseGLTFModel(opts.buffer);
   }
+  // MMFT.ClothPhysics.ClothPhysicManagerInstance.setClothPhysics(idol);
+
+  idol.traverse((child) => {
+    if (child.type == "Mesh" || child.type == "SkinnedMesh") {
+      // child.material.envMap = envMap;
+      const anyTing: any = child;
+      anyTing.material.envMapIntensity = 0.3;
+      anyTing.material.needsUpdate = true;
+      child.castShadow = true;
+      child.receiveShadow = true;
+    }
+  });
   MMFT.core.resetPolygonOffset(idol, camera);
   mixer = new THREE.AnimationMixer(idol);
   scene.add(idol);
@@ -381,7 +469,7 @@ async function handleChangePose(value: string) {
     setTimeout(() => {
       action.paused = true;
       action.stop();
-    }, params.fadeOut);
+    }, params.fadeOut * 1000);
   }
 
   activeActions.push(action);
@@ -438,7 +526,7 @@ async function fetchTTSToAnim(text: string) {
     speed: 42,
     volume: 100,
   };
-  let response: any = await fetch("//topen.metamaker.cn/api/openmm/v1/text_to_anim", {
+  let response: any = await fetch("//open.metamaker.cn/api/openmm/v1/text_to_anim", {
     method: "post",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -463,8 +551,8 @@ async function fetchTTSToAnim(text: string) {
   params.emoAnimURL = response.ret.expression_anim;
   const data = await Promise.all([
     loadAudio(response.ret.audio),
-    MMFT.core.loadTTSTeethAnimation(response.ret.teeth_anim),
-    MMFT.core.loadTTSEmoAnimation(response.ret.expression_anim),
+    MMFT.core.loadTTSTeethAnimation(response.ret.teeth_anim, (window as any).toothDownRatio),
+    MMFT.core.loadTTSEmoAnimation(response.ret.expression_anim, (window as any).boneRatio),
   ]);
   const audioBuffer = data[0];
   const listener = new THREE.AudioListener();

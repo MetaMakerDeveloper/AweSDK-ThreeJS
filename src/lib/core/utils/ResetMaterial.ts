@@ -28,7 +28,7 @@ const SubsurfaceScatteringShader = {
         value: 0.8,
       },
       _SSSFactor: {
-        value: 0.3,
+        value: 0.8,
       },
     },
   ]),

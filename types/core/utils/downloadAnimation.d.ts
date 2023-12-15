@@ -1,5 +1,5 @@
 import * as THREE from "three";
-export declare function downloadAnimation(animationName: any, geometryName: any): Promise<THREE.AnimationClip>;
+export declare function downloadAnimation(animationName: any, geometryName: any, ratio?: number): Promise<THREE.AnimationClip>;
 /**
  *
  * @param animateName 动画名称

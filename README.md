@@ -38,7 +38,12 @@ yarn build:lib
 
 1. 通过 npm
 
-metamaker-for-three 
+```
+npm install metamaker-for-three
+```
+
+2. 通过github
+metamaker-for-three 暂时没有上 npm，通过在 packagejson 中添加 github 的地址，并进行 yarn install
 
 ```
  npm install metamaker-for-three 
