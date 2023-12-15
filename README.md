@@ -46,9 +46,7 @@ npm install metamaker-for-three
 metamaker-for-three 暂时没有上 npm，通过在 packagejson 中添加 github 的地址，并进行 yarn install
 
 ```
-  "dependencies": {
-    "metamaker-for-three": "https://github.com/MetaMakerDeveloper/AweSDK-ThreeJS.git#最新版本号"
-  }
+ npm install metamaker-for-three 
 ```
 
 在无法连接 github 的情况下使用 gitee 连接
@@ -118,6 +116,7 @@ import MMFT from 'metamaker-for-three'
      headers: {
        "Content-Type": "application/x-www-form-urlencoded",
        Authorization: ttsAuth,
+       __hjvf:MMFT.sign()
      },
      body: qs.stringify({
        text: text,
@@ -198,6 +197,8 @@ MetaMakerDeveloper 发布的代码或数字资产（数字人、服装、动作�
 ![image](./code.jpg)
 
 ## 更新日志
+
+2023-1-09:解开动画根骨骼限制
 
 2022-10-25:动画资源请求路径重复出现/符
 

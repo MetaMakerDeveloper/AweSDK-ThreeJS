@@ -531,6 +531,7 @@ async function fetchTTSToAnim(text: string) {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
       Authorization: ttsAuth,
+      __hjvf: MMFT.sign(),
     },
     body: qs.stringify({
       text: text,
