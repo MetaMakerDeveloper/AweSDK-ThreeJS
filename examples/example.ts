@@ -438,7 +438,7 @@ async function fetchTTSToAnim(text: string) {
     speed: 42,
     volume: 100,
   };
-  let response: any = await fetch("//topen.metamaker.cn/api/openmm/v1/text_to_anim", {
+  let response: any = await fetch("//open.metamaker.cn/api/openmm/v1/text_to_anim", {
     method: "post",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
