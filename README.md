@@ -93,7 +93,7 @@ import MMFT from 'metamaker-for-three'
    import * as THREE from "three";
    import MMFT from "metamaker-for-three";
 
-   const animateName = `anim/Stand_idel`;
+   const animateName = `anim/Stand_Idel`;
    const json = await MMFT.core.loadAnimationData(animateName);
    const clip = MMFT.core.Convert(json);
    let mixer = new THREE.AnimationMixer(idol);

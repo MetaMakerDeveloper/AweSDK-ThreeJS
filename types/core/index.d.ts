@@ -5,6 +5,7 @@ import Convert from "./utils/convert";
 declare function loadGLTFModel(url: string): Promise<THREE.Group>;
 declare function parseGLTFModel(buffer: ArrayBuffer): Promise<THREE.Group>;
 declare function loadGLTFAnimation(url: string): Promise<THREE.AnimationClip>;
+declare function setModelInfo(model: any): any;
 declare function loadTTSTeethAnimation(url: string, ratio?: number): Promise<THREE.AnimationClip>;
 declare function loadTTSEmoAnimation(url: string, ratio?: number): Promise<THREE.AnimationClip>;
-export { Convert, loadAnimationData, downloadAnimation, loadGLTFModel, parseGLTFModel, loadTTSTeethAnimation, loadTTSEmoAnimation, resetPolygonOffset, loadGLTFAnimation };
+export { Convert, loadAnimationData, downloadAnimation, loadGLTFModel, parseGLTFModel, loadTTSTeethAnimation, loadTTSEmoAnimation, resetPolygonOffset, loadGLTFAnimation, setModelInfo };

@@ -130,5 +130,6 @@ export {
   loadTTSTeethAnimation,
   loadTTSEmoAnimation,
   resetPolygonOffset,
-  loadGLTFAnimation
+  loadGLTFAnimation,
+  setModelInfo
 };
