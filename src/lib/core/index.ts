@@ -1,6 +1,7 @@
 /* eslint-disable */
 import * as THREE from "three";
 import { GLTFLoader } from "./utils/GLTFLoader";
+
 import { resetMaterial ,resetPolygonOffset} from "./utils/ResetMaterial";
 import {
   setBodyMorphTargetDictionary,
@@ -29,7 +30,7 @@ function loadGLTFModel(url: string): Promise<THREE.Group> {
         // }
       });
       
-      setModelInfo(model);
+      setModelInfo(model,true);
       resolve(model);
     });
   });
@@ -84,8 +85,10 @@ function remapMorphtarget(obj){
     }
 }
 // 设置Model信息
-function setModelInfo(model) {
-  resetMaterial(model);
+function setModelInfo(model ,  resetM = true ) {
+  if(resetM){
+    resetMaterial(model);
+  }  
 
   let body =model.getObjectByName("head_part");
 
