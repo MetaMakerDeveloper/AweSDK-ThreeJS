@@ -120,5 +120,6 @@ export {
   parseGLTFModel,
   loadTTSTeethAnimation,
   loadTTSEmoAnimation,
-  resetPolygonOffset
+  resetPolygonOffset,
+  setModelInfo
 };
