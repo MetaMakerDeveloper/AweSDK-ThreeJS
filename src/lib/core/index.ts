@@ -48,14 +48,6 @@ function parseGLTFModel(buffer: ArrayBuffer): Promise<THREE.Group> {
           if ( child.type == 'SkinnedMesh' ) {
             child.frustumCulled = false;
           }
-          // var n:any =child ;
-          // if (n.material != null ){
-          //    if (n.material.name.indexOf("DiffNormalPacked") >= 0||n.material.name.indexOf("Custom/Diff") >= 0) {
-          //     console.log("0000000000000000000000000"+n.material.depthWrite)
-          //     console.log(n.name)
-          //     console.log(n.material.name)
-          //    }
-          // }
         });
         setModelInfo(model);
         resolve(model);
