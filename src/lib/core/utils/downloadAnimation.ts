@@ -84,7 +84,7 @@ export const loadAnimationData = async function (
   let ret;
   const result = (await downloadData(url, "arraybuffer")) as ArrayBuffer;
   const buffer = new Uint8Array(result) as Uint8Array;
-  let fileBuffer = await new Promise((resolve) => {
+  let fileBuffer:number[] | Uint8Array = await new Promise((resolve) => {
     const unzipper = new fflate.Unzip();
     unzipper.register(fflate.UnzipInflate);
     unzipper.onfile = (file) => {
@@ -107,7 +107,7 @@ export const loadAnimationData = async function (
     unzipper.push(buffer, true);
   });
 
-  fileBuffer = new Uint8Array(fileBuffer as any);
+  fileBuffer  = new Uint8Array(fileBuffer as any)  as Uint8Array;
 
   let s = await largeUint8ArrayToString(fileBuffer);
 

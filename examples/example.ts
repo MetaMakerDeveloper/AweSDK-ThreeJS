@@ -436,16 +436,16 @@ async function replaceIdol(opts: string | Uint8Array) {
   }
   // MMFT.ClothPhysics.ClothPhysicManagerInstance.setClothPhysics(idol);
 
-  idol.traverse((child) => {
-    if (child.type == "Mesh" || child.type == "SkinnedMesh") {
-      // child.material.envMap = envMap;
-      const anyTing: any = child;
-      anyTing.material.envMapIntensity = 0.3;
-      anyTing.material.needsUpdate = true;
-      child.castShadow = true;
-      child.receiveShadow = true;
-    }
-  });
+  // idol.traverse((child) => {
+  //   if (child.type == "Mesh" || child.type == "SkinnedMesh") {
+    
+  //     const anyTing: any = child;
+  //     anyTing.material.envMapIntensity = 0.3;
+  //     anyTing.material.needsUpdate = true;
+  //     child.castShadow = true;
+  //     child.receiveShadow = true;
+  //   }
+  // });
   MMFT.core.resetPolygonOffset(idol, camera);
   mixer = new THREE.AnimationMixer(idol);
   scene.add(idol);

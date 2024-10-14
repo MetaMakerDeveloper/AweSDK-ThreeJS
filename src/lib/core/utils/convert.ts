@@ -1,5 +1,6 @@
 /* eslint-disable */
 import * as THREE from "three";
+import cloneDeep from "lodash-es/cloneDeep";
 let bodyMorphTargetDictionary = {};
 let teethMorphTargetDictionary = {};
 export let bodyMeshName;
@@ -36,7 +37,7 @@ export function ConvertGLTFAnimation(gltf: any): THREE.AnimationClip {
     );
   }
 
-  let clip = _.cloneDeep(gltf);
+  let clip = cloneDeep(gltf);
   let newTracks = [];
 
   for (let index = 0; index < clip.tracks.length; index++) {
@@ -221,7 +222,7 @@ export default function Convert(fp, isEmotion = false) {
             ".morphTargetInfluences[" +
             bodyMorphTargetDictionary[temp + "_" + addNum(temp)] +
             "]";
-          const beardtrack = new KeyframeTrack(beardtrackName, times, values);
+          const beardtrack = new THREE.KeyframeTrack(beardtrackName, times, values);
           kfs.push(beardtrack);
         }
         if (eyelashesName.length) {
@@ -230,7 +231,7 @@ export default function Convert(fp, isEmotion = false) {
             ".morphTargetInfluences[" +
             bodyMorphTargetDictionary[temp + "_" + addNum(temp)] +
             "]";
-          const eyelashtrack = new KeyframeTrack(eyelashTrackName, times, values);
+          const eyelashtrack = new THREE.KeyframeTrack(eyelashTrackName, times, values);
           kfs.push(eyelashtrack);
         }
       }

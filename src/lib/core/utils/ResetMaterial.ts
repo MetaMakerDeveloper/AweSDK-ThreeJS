@@ -61,113 +61,113 @@ const SubsurfaceScatteringShader = {
   ].join("\n"),
 };
 
-export function resetPolygonOffset(model, camera) {
-  //return;
-  model.traverse((n) => {
-    if (n.material != null) {
-      if (n.material.name.indexOf("Hair") >= 0) {
-      } else if (
-        n.material.name.indexOf("DiffNormalPacked") >= 0 ||
-        n.material.name.indexOf("Custom/Diff") >= 0
-      ) {
-      } else if (
-        n.material.name.indexOf("head_sss") >= 0 ||
-        n.material.name.indexOf("body_sss") >= 0
-      ) {
-      } else if (
-        n.material.name.indexOf("eye") >= 0 ||
-        n.material.name.indexOf("Eye") >= 0 ||
-        n.material.name.indexOf("yachi") >= 0 ||
-        n.material.name.indexOf("Eye") >= 0
-      ) {
-      } else {
-        console.log("XXXXXXXXXXXXXXXXXXXXXXX" + n.name + "  " + n.material.name);
+// export function resetPolygonOffset(model, camera) {
+//   //return;
+//   model.traverse((n) => {
+//     if (n.material != null) {
+//       if (n.material.name.indexOf("Hair") >= 0) {
+//       } else if (
+//         n.material.name.indexOf("DiffNormalPacked") >= 0 ||
+//         n.material.name.indexOf("Custom/Diff") >= 0
+//       ) {
+//       } else if (
+//         n.material.name.indexOf("head_sss") >= 0 ||
+//         n.material.name.indexOf("body_sss") >= 0
+//       ) {
+//       } else if (
+//         n.material.name.indexOf("eye") >= 0 ||
+//         n.material.name.indexOf("Eye") >= 0 ||
+//         n.material.name.indexOf("yachi") >= 0 ||
+//         n.material.name.indexOf("Eye") >= 0
+//       ) {
+//       } else {
+//         console.log("XXXXXXXXXXXXXXXXXXXXXXX" + n.name + "  " + n.material.name);
 
-        var m = n.material.clone();
-        m.polygonOffset = true;
+//         var m = n.material.clone();
+//         m.polygonOffset = true;
 
-        m.polygonOffsetFactor = -1.0;
-        var p = model.position.clone().sub(camera.position);
-        p.y = 0;
-        console.log(p);
-        m.polygonOffsetUnits = -3000.0 / p.length();
-        n.material = m;
-      }
-    }
-  });
-}
-export function resetMaterial(model) {
-  const hairs: any[] = [];
-  const s = 1.04;
-  model.traverse((n) => {
-    if (n.material != null) {
-      if (n.material.name.indexOf("Hair") >= 0) {
-        hairs.push(n);
-        n.scale.x = n.scale.x * s;
-        n.scale.z = n.scale.z * s;
-      } else if (
-        n.material.name.indexOf("DiffNormalPacked") >= 0 ||
-        n.material.name.indexOf("Custom/Diff") >= 0
-      ) {
-        n.scale.x = n.scale.x * s;
-        n.scale.z = n.scale.z * s;
-        const m = new THREE.MeshBasicMaterial({
-          side: THREE.DoubleSide,
-        });
-        m.map = n.material.map;
-        m.name = n.material.name + "_resetMaterial_hat";
-        n.material = m;
-      } else {
-        // n.material.roughness=0.8;
-      }
-      // resetSSSMaterial(n);
-    }
-  });
+//         m.polygonOffsetFactor = -1.0;
+//         var p = model.position.clone().sub(camera.position);
+//         p.y = 0;
+//         console.log(p);
+//         m.polygonOffsetUnits = -3000.0 / p.length();
+//         n.material = m;
+//       }
+//     }
+//   });
+// }
+// export function resetMaterial(model) {
+//   const hairs: any[] = [];
+//   const s = 1.04;
+//   model.traverse((n) => {
+//     if (n.material != null) {
+//       if (n.material.name.indexOf("Hair") >= 0) {
+//         hairs.push(n);
+//         n.scale.x = n.scale.x * s;
+//         n.scale.z = n.scale.z * s;
+//       } else if (
+//         n.material.name.indexOf("DiffNormalPacked") >= 0 ||
+//         n.material.name.indexOf("Custom/Diff") >= 0
+//       ) {
+//         n.scale.x = n.scale.x * s;
+//         n.scale.z = n.scale.z * s;
+//         const m = new THREE.MeshBasicMaterial({
+//           side: THREE.DoubleSide,
+//         });
+//         m.map = n.material.map;
+//         m.name = n.material.name + "_resetMaterial_hat";
+//         n.material = m;
+//       } else {
+//         // n.material.roughness=0.8;
+//       }
+//       // resetSSSMaterial(n);
+//     }
+//   });
 
-  hairs.forEach((n) => {
-    const materialFirstPass = new THREE.MeshBasicMaterial({
-      alphaTest: 0.99,
-      transparent: false,
-      side: THREE.DoubleSide,
-    });
-    const materialBackSide = new THREE.MeshBasicMaterial({
-      blending: THREE.NormalBlending,
-      blendEquation: THREE.AddEquation,
-      blendSrc: THREE.SrcAlphaFactor,
-      blendDst: THREE.OneMinusSrcAlphaFactor,
-      depthWrite: false,
-      depthTest: true,
-      transparent: true,
-      side: THREE.BackSide,
-    });
-    const materialFrontSide = new THREE.MeshBasicMaterial({
-      blending: THREE.NormalBlending,
-      blendEquation: THREE.AddEquation,
-      blendSrc: THREE.SrcAlphaFactor,
-      blendDst: THREE.OneMinusSrcAlphaFactor,
-      depthWrite: false,
-      depthTest: true,
-      transparent: true,
-      side: THREE.FrontSide,
-    });
-    materialFirstPass.map = n.material.map;
-    materialBackSide.map = n.material.map;
-    materialFrontSide.map = n.material.map;
-    materialFirstPass.name = n.material.name + "materialFirstPass";
-    materialBackSide.name = n.material.name + "materialBackSide";
-    materialFrontSide.name = n.material.name + "materialFrontSide";
-    let mesh = n;
-    let mesh2 = n.clone();
-    n.parent.add(mesh2);
-    let mesh3 = n.clone();
-    n.parent.add(mesh3);
-    mesh.material = materialFirstPass;
-    mesh2.material = materialBackSide;
-    mesh2.renderOrder = n.renderOrder + 1;
-    mesh3.material = materialFrontSide;
-    mesh3.renderOrder = n.renderOrder + 2;
-  });
-}
+//   hairs.forEach((n) => {
+//     const materialFirstPass = new THREE.MeshBasicMaterial({
+//       alphaTest: 0.99,
+//       transparent: false,
+//       side: THREE.DoubleSide,
+//     });
+//     const materialBackSide = new THREE.MeshBasicMaterial({
+//       blending: THREE.NormalBlending,
+//       blendEquation: THREE.AddEquation,
+//       blendSrc: THREE.SrcAlphaFactor,
+//       blendDst: THREE.OneMinusSrcAlphaFactor,
+//       depthWrite: false,
+//       depthTest: true,
+//       transparent: true,
+//       side: THREE.BackSide,
+//     });
+//     const materialFrontSide = new THREE.MeshBasicMaterial({
+//       blending: THREE.NormalBlending,
+//       blendEquation: THREE.AddEquation,
+//       blendSrc: THREE.SrcAlphaFactor,
+//       blendDst: THREE.OneMinusSrcAlphaFactor,
+//       depthWrite: false,
+//       depthTest: true,
+//       transparent: true,
+//       side: THREE.FrontSide,
+//     });
+//     materialFirstPass.map = n.material.map;
+//     materialBackSide.map = n.material.map;
+//     materialFrontSide.map = n.material.map;
+//     materialFirstPass.name = n.material.name + "materialFirstPass";
+//     materialBackSide.name = n.material.name + "materialBackSide";
+//     materialFrontSide.name = n.material.name + "materialFrontSide";
+//     let mesh = n;
+//     let mesh2 = n.clone();
+//     n.parent.add(mesh2);
+//     let mesh3 = n.clone();
+//     n.parent.add(mesh3);
+//     mesh.material = materialFirstPass;
+//     mesh2.material = materialBackSide;
+//     mesh2.renderOrder = n.renderOrder + 1;
+//     mesh3.material = materialFrontSide;
+//     mesh3.renderOrder = n.renderOrder + 2;
+//   });
+// }
 export function resetSSSMaterial(n) {
   if (n.material.name.indexOf("head_sss") >= 0 || n.material.name.indexOf("body_sss") >= 0) {
     const shader = SubsurfaceScatteringShader;

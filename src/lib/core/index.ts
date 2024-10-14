@@ -2,7 +2,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "./utils/GLTFLoader";
 
-import { resetMaterial, resetSSSMaterial, resetPolygonOffset } from "./utils/ResetMaterial";
+import { resetSSSMaterial } from "./utils/ResetMaterial";
 import {
   setBodyMorphTargetDictionary,
   setTeethMorphTargetDictionary,
