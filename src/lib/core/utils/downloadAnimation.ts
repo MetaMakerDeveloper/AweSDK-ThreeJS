@@ -3,6 +3,7 @@ import { downloadData } from "./downloadData";
 import * as fflate from "fflate";
 import { getSuffixName, largeUint8ArrayToString } from ".";
 import cryptoModule from "./metacrypto.js";
+import { loadGLTFAnimation } from "..";
 export async function downloadAnimation(animationName, geometryName, ratio = 0.65) {
   let arraybuffer: ArrayBuffer;
   // eslint-disable-next-line prefer-const
@@ -68,7 +69,7 @@ export async function downloadAnimation(animationName, geometryName, ratio = 0.6
  */
 export const loadAnimationData = async function (
   animateName: string,
-  baseUrl = "//img.metaworks.cn/webgl/app"
+  baseUrl = "//img.metamaker.cn/webgl/app"
 ): Promise<object> {
   let url: string;
   if (!animateName) {
@@ -80,9 +81,10 @@ export const loadAnimationData = async function (
     url = `${baseUrl}/${animateName}`;
   }
 
+  let ret;
   const result = (await downloadData(url, "arraybuffer")) as ArrayBuffer;
   const buffer = new Uint8Array(result) as Uint8Array;
-  let fileBuffer = await new Promise((resolve) => {
+  let fileBuffer:number[] | Uint8Array = await new Promise((resolve) => {
     const unzipper = new fflate.Unzip();
     unzipper.register(fflate.UnzipInflate);
     unzipper.onfile = (file) => {
@@ -105,13 +107,20 @@ export const loadAnimationData = async function (
     unzipper.push(buffer, true);
   });
 
-  fileBuffer = new Uint8Array(fileBuffer as any);
+  fileBuffer  = new Uint8Array(fileBuffer as any)  as Uint8Array;
 
   let s = await largeUint8ArrayToString(fileBuffer);
-  if (s[0] != "{") {
+
+  if (s[0] == "e") {
     const arraybuffer = await cryptoModule.decryptData(fileBuffer);
     s = await largeUint8ArrayToString(arraybuffer);
+    ret = JSON.parse(s);
+  } else if (s.slice(0, 4) === "glTF") {
+    const blob = new Blob([fileBuffer], { type: "application/octet-stream" });
+    ret = loadGLTFAnimation(URL.createObjectURL(blob));
+  } else {
+    ret = JSON.parse(s);
   }
-  const json = JSON.parse(s);
-  return json;
+
+  return ret;
 };
